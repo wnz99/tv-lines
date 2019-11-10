@@ -1,5 +1,5 @@
 {
-  "name": "tv-orders",
+  "name": "tv-lines",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wnz99/tv-orders.git"
+    "url": "git+https://github.com/wnz99/tv-lines.git"
   },
   "author": "David Fava <dfava80@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/wnz99/tv-orders/issues"
+    "url": "https://github.com/wnz99/tv-lines/issues"
   },
-  "homepage": "https://github.com/wnz99/tv-orders#readme",
+  "homepage": "https://github.com/wnz99/tv-lines#readme",
   "jest": {
     "setupFilesAfterEnv": [
       "jest-extended"
