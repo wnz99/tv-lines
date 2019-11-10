@@ -1,0 +1,63 @@
+{
+  "name": "tv-orders",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "standard": {
+    "ignore": [
+      "/dist"
+    ]
+  },
+  "scripts": {
+    "develop": "webpack --mode development --watch",
+    "build": "webpack --mode production",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --colors",
+    "release": "np"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wnz99/tv-orders.git"
+  },
+  "author": "David Fava <dfava80@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wnz99/tv-orders/issues"
+  },
+  "homepage": "https://github.com/wnz99/tv-orders#readme",
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ],
+    "setupFiles": [
+      "<rootDir>/setupTests.js"
+    ],
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "jest": "^24.9.0",
+    "jest-extended": "^0.11.2",
+    "prettier": "1.18.2",
+    "prettier-eslint": "^9.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "md5": "^2.2.1",
+    "rxjs": "^6.5.3",
+    "updeep": "^1.2.0"
+  }
+}
