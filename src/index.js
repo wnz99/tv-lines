@@ -1,9 +1,9 @@
 const bindMethods = require('./lib/bindMethods');
 
 module.exports = tvChart => {
-  const tvUtil = bindMethods(tvChart);
+  const tvLines = bindMethods(tvChart);
 
-  tvUtil.isBrowser = typeof window !== 'undefined';
+  tvLines.isBrowser = typeof window !== 'undefined';
 
-  return tvUtil;
+  return tvLines;
 };
