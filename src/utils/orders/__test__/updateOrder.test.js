@@ -29,7 +29,7 @@ const { ORDER_LINE } = lineType;
 
 let mockTvChart;
 
-describe('addOrder function', () => {
+describe('updateOrder function', () => {
   beforeEach(() => {
     mockTvChart = tvChart();
     db.get.mockClear();
