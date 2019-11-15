@@ -5,7 +5,7 @@ const db = require('../../../lib/db');
 const makeInteractionMsg = require('../../misc/makeInteractionMsg');
 const {
   interactionType,
-  defaultOrderStyleProp,
+  defaultOrderStyleProps,
   lineType,
 } = require('../../../const');
 
@@ -43,7 +43,7 @@ const {
   cancelButtonBorderColor,
   cancelButtonBackgroundColor,
   cancelButtonIconColorString,
-} = defaultOrderStyleProp;
+} = defaultOrderStyleProps;
 
 const orderStyle = {
   extendLeft: false,

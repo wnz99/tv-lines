@@ -4,12 +4,12 @@ module.exports = {
     POSITION_LINE: 'position',
   },
 
-  defaultOrderProp: {
+  defaultOrderProps: {
     modifyTooltip: 'Modify Order',
     cancelToolTip: 'Cancel Order',
   },
 
-  defaultOrderStyleProp: {
+  defaultOrderStyleProps: {
     extendLeft: true,
     lineLength: 0,
     lineStyle: 2,
@@ -28,7 +28,13 @@ module.exports = {
     cancelButtonIconColorString: 'rgb(255, 0, 0)',
   },
 
-  defaultPositionStyleProp: {
+  defaultPositionProps: {
+    protectTooltip: 'Protect Position',
+    reverseToolTip: 'Reverse Position',
+    closeToolTip: 'Close Position',
+  },
+
+  defaultPositionStyleProps: {
     extendLeft: true,
     lineLength: 0,
     lineStyle: 2,
@@ -56,7 +62,7 @@ module.exports = {
     ON_ORDER_MODIFY: 'onOrderMofify',
     ON_ORDER_CANCEL: 'onOrderCancel',
     ON_POSITION_ADD: 'onPositionAdd',
-    ON_POSITION_CLOST: 'onPositionClose',
+    ON_POSITION_CLOSE: 'onPositionClose',
     ON_POSITION_MODIFY: 'onPositionMofify',
     ON_POSITION_REVERSE: 'onPositionReverse',
   },

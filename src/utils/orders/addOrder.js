@@ -1,8 +1,8 @@
 const u = require('updeep');
 const {
-  defaultOrderProp,
+  defaultOrderProps,
   interactionType,
-  defaultOrderStyleProp,
+  defaultOrderStyleProps,
   lineType,
 } = require('../../const');
 const makeInteractionMsg = require('../misc/makeInteractionMsg');
@@ -10,8 +10,8 @@ const makeInteractionMsg = require('../misc/makeInteractionMsg');
 module.exports = (tvUtil, db, onInteraction$, order) => {
   const { tvChart } = tvUtil;
   const { data, style } = order;
-  const fullOrderData = { ...defaultOrderProp, ...data };
-  const fullOrderStyle = { ...defaultOrderStyleProp, ...style };
+  const fullOrderData = { ...defaultOrderProps, ...data };
+  const fullOrderStyle = { ...defaultOrderStyleProps, ...style };
   const {
     id,
     price,
