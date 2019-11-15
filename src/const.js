@@ -30,8 +30,8 @@ module.exports = {
 
   defaultPositionProps: {
     protectTooltip: 'Protect Position',
-    reverseToolTip: 'Reverse Position',
-    closeToolTip: 'Close Position',
+    reverseTooltip: 'Reverse Position',
+    closeTooltip: 'Close Position',
   },
 
   defaultPositionStyleProps: {
