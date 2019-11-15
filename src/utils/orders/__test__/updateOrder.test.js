@@ -28,19 +28,20 @@ db.get.mockImplementation(() => ({
 const { ORDER_LINE } = lineType;
 
 let mockTvChart;
+let tvUtil;
 
 describe('updateOrder function', () => {
   beforeEach(() => {
     mockTvChart = tvChart();
     db.get.mockClear();
     remove.mockClear();
-  });
-
-  it(`should return error`, () => {
-    const tvUtil = {
+    tvUtil = {
       order: { add: jest.fn().mockImplementation(() => mockTvChart) },
       tvChart: mockTvChart,
     };
+  });
+
+  it(`should return error`, () => {
     remove.mockImplementationOnce(() => {
       throw Error('Test error');
     });
@@ -60,10 +61,6 @@ describe('updateOrder function', () => {
   });
 
   it(`should update an order`, () => {
-    const tvUtil = {
-      order: { add: jest.fn().mockImplementation(() => mockTvChart) },
-      tvChart: mockTvChart,
-    };
     const orderUpdate = {
       data: {
         price: 40,
