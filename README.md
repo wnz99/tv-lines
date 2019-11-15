@@ -16,9 +16,10 @@ const initOrders = (tvWidget) => {
   tvLines.interactions$.subscribe(interaction => {
     // interaction will be an object as:
     // {
-    //   type: "onAdd", -> type can be: 'onAdd', 'onModify', 'onCancel', 'onMove'
+    //   type: "onOrderAdd", -> type can be: 'onOrderAdd', 'onOrderModify', 'onOrderCancel', 'onOrderMove', 
+    //   'onPositionAdd', 'onPositionClose', 'onPositionMofify', 'onPositionReverse'
     //   timestamp: 1573390204704, -> the time stamp of the interaction
-    //   order: {data: {…}, style: {...}, tvLine: n} - > an object with the original order data and tvLine TV line instance
+    //   line: {data: {…}, style: {...}, tvLine: n} - > an object with the original order data and tvLine TV line instance
     //   update: {
     //      price: 123, -> The new price for 'onMove' interaction
     //    }

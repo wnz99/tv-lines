@@ -13,7 +13,7 @@ jest.mock('../../../lib/db');
 jest.mock('../../misc/makeInteractionMsg');
 makeInteractionMsg.mockImplementation((type, order) => ({
   type,
-  order,
+  line: { ...order },
 }));
 
 db.get.mockImplementation(() => ({
@@ -94,7 +94,7 @@ describe('addOrder function', () => {
     onInteraction$.subscribe(message => {
       const expectedMessage = {
         type: ON_ORDER_ADD,
-        order: {
+        line: {
           id: 1,
           price: 10,
         },
@@ -207,7 +207,7 @@ describe('addOrder function', () => {
       if (message.type === ON_ORDER_MOVE) {
         const expectedMessage = {
           type: ON_ORDER_MOVE,
-          order: {
+          line: {
             id: 1,
             price: 10,
           },
@@ -216,7 +216,7 @@ describe('addOrder function', () => {
           },
         };
         expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.order.id,
+          expectedMessage.line.id,
           ORDER_LINE
         );
         expect(message).toEqual(expectedMessage);
@@ -237,13 +237,13 @@ describe('addOrder function', () => {
       if (message.type === ON_ORDER_MODIFY) {
         const expectedMessage = {
           type: ON_ORDER_MODIFY,
-          order: {
+          line: {
             id: 1,
             price: 10,
           },
         };
         expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.order.id,
+          expectedMessage.line.id,
           ORDER_LINE
         );
         expect(message).toEqual(expectedMessage);
@@ -262,7 +262,7 @@ describe('addOrder function', () => {
       if (message.type === ON_ORDER_CANCEL) {
         const expectedMessage = {
           type: ON_ORDER_CANCEL,
-          order: {
+          line: {
             id: 1,
             price: 10,
           },
