@@ -3,6 +3,7 @@ const {
   defaultOrderProp,
   interactionType,
   defaultOrderStyleProp,
+  lineType,
 } = require('../../const');
 const makeInteractionMsg = require('../misc/makeInteractionMsg');
 
@@ -48,6 +49,8 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
     ON_ORDER_MOVE,
   } = interactionType;
 
+  const { ORDER_LINE } = lineType;
+
   try {
     const orderLine = tvChart.createOrderLine();
 
@@ -62,7 +65,7 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
       .setTooltip(tooltip)
       .onMove(function onMove() {
         const message = {
-          ...makeInteractionMsg(ON_ORDER_MOVE, db.get(id)),
+          ...makeInteractionMsg(ON_ORDER_MOVE, db.get(id, ORDER_LINE)),
           update: {
             price: this.getPrice(),
           },
@@ -70,10 +73,14 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
         onInteraction$.next(message);
       })
       .onModify(function onModify() {
-        onInteraction$.next(makeInteractionMsg(ON_ORDER_MODIFY, db.get(id)));
+        onInteraction$.next(
+          makeInteractionMsg(ON_ORDER_MODIFY, db.get(id, ORDER_LINE))
+        );
       })
       .onCancel(function onCancel() {
-        onInteraction$.next(makeInteractionMsg(ON_ORDER_CANCEL, db.get(id)));
+        onInteraction$.next(
+          makeInteractionMsg(ON_ORDER_CANCEL, db.get(id, ORDER_LINE))
+        );
       });
 
     // Style methods
@@ -95,9 +102,11 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
       .setCancelButtonBackgroundColor(cancelButtonBackgroundColor)
       .setCancelButtonIconColor(cancelButtonIconColorString);
 
-    db.add(u(data, {}), style, orderLine);
+    db.add(u(data, {}), style, orderLine, ORDER_LINE);
 
-    onInteraction$.next(makeInteractionMsg(ON_ORDER_ADD, db.get(id)));
+    onInteraction$.next(
+      makeInteractionMsg(ON_ORDER_ADD, db.get(id, ORDER_LINE))
+    );
     return orderLine;
   } catch (err) {
     return { error: err.message };

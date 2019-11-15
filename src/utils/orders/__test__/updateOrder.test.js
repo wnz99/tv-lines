@@ -1,6 +1,7 @@
 /* global tvChart */
 const updateOrder = require('../updateOrder');
 const db = require('../../../lib/db');
+const { lineType } = require('../../../const');
 
 jest.mock('../../../lib/db');
 
@@ -23,6 +24,9 @@ db.get.mockImplementation(() => ({
     remove,
   },
 }));
+
+const { ORDER_LINE } = lineType;
+
 let mockTvChart;
 
 describe('addOrder function', () => {
@@ -88,7 +92,7 @@ describe('addOrder function', () => {
 
     const result = updateOrder(tvUtil, db, null, orderId, orderUpdate);
     expect(db.get).toHaveBeenCalledTimes(1);
-    expect(db.get).toHaveBeenCalledWith(orderId);
+    expect(db.get).toHaveBeenCalledWith(orderId, ORDER_LINE);
     expect(remove).toHaveBeenCalledTimes(1);
     expect(tvUtil.order.add).toHaveBeenCalledWith(expectedUpdatedOrder);
     expect(result).toBe(mockTvChart);

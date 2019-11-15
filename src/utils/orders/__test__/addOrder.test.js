@@ -3,7 +3,11 @@ const { Subject } = require('rxjs');
 const addOrder = require('../addOrder');
 const db = require('../../../lib/db');
 const makeInteractionMsg = require('../../misc/makeInteractionMsg');
-const { interactionType, defaultOrderStyleProp } = require('../../../const');
+const {
+  interactionType,
+  defaultOrderStyleProp,
+  lineType,
+} = require('../../../const');
 
 jest.mock('../../../lib/db');
 jest.mock('../../misc/makeInteractionMsg');
@@ -16,6 +20,8 @@ db.get.mockImplementation(() => ({
   id: 1,
   price: 10,
 }));
+
+const { ORDER_LINE } = lineType;
 
 const {
   ON_ORDER_ADD,
@@ -69,6 +75,8 @@ describe('addOrder function', () => {
     tvUtil = {
       tvChart: mockTvChart,
     };
+    db.get.mockClear();
+    db.del.mockClear();
   });
 
   it(`should return error`, () => {
@@ -183,7 +191,12 @@ describe('addOrder function', () => {
     );
 
     expect(db.add).toHaveBeenCalledTimes(1);
-    expect(db.add).toHaveBeenCalledWith(orderData, orderStyle, mockTvChart);
+    expect(db.add).toHaveBeenCalledWith(
+      orderData,
+      orderStyle,
+      mockTvChart,
+      ORDER_LINE
+    );
 
     expect(result.error).toBe(undefined);
   });
@@ -202,6 +215,10 @@ describe('addOrder function', () => {
             price: 180,
           },
         };
+        expect(db.get).toHaveBeenCalledWith(
+          expectedMessage.order.id,
+          ORDER_LINE
+        );
         expect(message).toEqual(expectedMessage);
         done();
       }
@@ -225,6 +242,10 @@ describe('addOrder function', () => {
             price: 10,
           },
         };
+        expect(db.get).toHaveBeenCalledWith(
+          expectedMessage.order.id,
+          ORDER_LINE
+        );
         expect(message).toEqual(expectedMessage);
         done();
       }
@@ -235,7 +256,7 @@ describe('addOrder function', () => {
     onModify();
   });
 
-  it(`should emit message onCance callback`, done => {
+  it(`should emit message onCancel callback`, done => {
     const onInteraction$ = new Subject();
     onInteraction$.subscribe(message => {
       if (message.type === ON_ORDER_CANCEL) {
