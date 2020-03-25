@@ -1,19 +1,19 @@
 /* global tvChart */
 const { Subject } = require('rxjs');
-const addOrder = require('../addOrder');
+const addPosition = require('../addPosition');
 const db = require('../../../lib/db');
 const makeInteractionMsg = require('../../misc/makeInteractionMsg');
 const {
   interactionType,
-  defaultOrderStyleProps,
+  defaultPositionStyleProps,
   lineType,
 } = require('../../../const');
 
 jest.mock('../../../lib/db');
 jest.mock('../../misc/makeInteractionMsg');
-makeInteractionMsg.mockImplementation((type, order) => ({
+makeInteractionMsg.mockImplementation((type, position) => ({
   type,
-  line: { ...order },
+  line: { ...position },
 }));
 
 db.get.mockImplementation(() => ({
@@ -21,13 +21,13 @@ db.get.mockImplementation(() => ({
   price: 10,
 }));
 
-const { ORDER_LINE } = lineType;
+const { POSITION_LINE } = lineType;
 
 const {
-  ON_ORDER_ADD,
-  ON_ORDER_CANCEL,
-  ON_ORDER_MODIFY,
-  ON_ORDER_MOVE,
+  ON_POSITION_ADD,
+  ON_POSITION_CLOSE,
+  ON_POSITION_MODIFY,
+  ON_POSITION_REVERSE,
 } = interactionType;
 
 const {
@@ -40,36 +40,39 @@ const {
   quantityBorderColor,
   quantityBackgroundColor,
   quantityTextColor,
-  cancelButtonBorderColor,
-  cancelButtonBackgroundColor,
-  cancelButtonIconColorString,
-} = defaultOrderStyleProps;
+  reverseButtonBorderColor,
+  reverseButtonBackgroundColor,
+  reverseButtonIconColor,
+  closeButtonBorderColor,
+  closeButtonBackgroundColor,
+  closeButtonIconColor,
+} = defaultPositionStyleProps;
 
-const orderStyle = {
+const positionStyle = {
   extendLeft: false,
   lineLength: 4,
   lineStyle: 5,
   lineWidth: 6,
 };
 
-const orderData = {
+const positionData = {
   id: 1,
-  price: '10',
+  price: 10,
   quantity: 100,
-  tooltip: 'order tooltip',
-  modifyTooltip: 'modify tooltip test',
-  cancelTooltip: 'cancel tooltip test',
-  editable: true,
-  text: 'BUY: Price 10',
+  tooltip: 'Position tooltip',
+  protectTooltip: 'Protect tooltip test',
+  reverseTooltip: 'Reverse tooltip test',
+  closeTooltip: 'Close tooltip test',
+  text: 'STOP: 73.5 (5,64%)',
 };
 
-const order = { data: orderData, style: orderStyle };
+const position = { data: positionData, style: positionStyle };
 
 let mockTvChart;
 
 let tvUtil;
 
-describe('addOrder function', () => {
+describe('addPosition function', () => {
   beforeEach(() => {
     mockTvChart = tvChart();
     tvUtil = {
@@ -81,19 +84,18 @@ describe('addOrder function', () => {
 
   it(`should return error`, () => {
     const onInteraction$ = new Subject();
-    mockTvChart.createOrderLine.mockImplementation(() => {
+    mockTvChart.createPositionLine.mockImplementation(() => {
       throw Error('Test error');
     });
-
-    const result = addOrder(tvUtil, db, onInteraction$, order);
+    const result = addPosition(tvUtil, db, onInteraction$, position);
     expect(result).toEqual({ error: 'Test error' });
   });
 
-  it(`should add an order`, done => {
+  it(`should add a position`, done => {
     const onInteraction$ = new Subject();
     onInteraction$.subscribe(message => {
       const expectedMessage = {
-        type: ON_ORDER_ADD,
+        type: ON_POSITION_ADD,
         line: {
           id: 1,
           price: 10,
@@ -102,36 +104,31 @@ describe('addOrder function', () => {
       expect(message).toEqual(expectedMessage);
       done();
     });
-
     const {
       data: {
         price,
         quantity,
         tooltip,
-        modifyTooltip,
-        cancelTooltip,
-        editable,
+        protectTooltip,
+        reverseTooltip,
+        closeTooltip,
         text,
       },
       style: { extendLeft, lineLength, lineStyle, lineWidth },
-    } = order;
-
-    const result = addOrder(tvUtil, db, onInteraction$, order);
-
+    } = position;
+    const result = addPosition(tvUtil, db, onInteraction$, position);
     expect(result).toBe(mockTvChart);
-
-    expect(mockTvChart.createOrderLine).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.createPositionLine).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setPrice).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setQuantity).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setText).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setCancelTooltip).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setEditable).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setModifyTooltip).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setProtectTooltip).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setCloseTooltip).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setReverseTooltip).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setTooltip).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.onMove).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.onReverse).toHaveBeenCalledTimes(1);
     expect(mockTvChart.onModify).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.onCancel).toHaveBeenCalledTimes(1);
-
+    expect(mockTvChart.onClose).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setExtendLeft).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setLineLength).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setLineStyle).toHaveBeenCalledTimes(1);
@@ -145,18 +142,21 @@ describe('addOrder function', () => {
     expect(mockTvChart.setQuantityBorderColor).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setQuantityBackgroundColor).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setQuantityTextColor).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setCancelButtonBorderColor).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setCancelButtonBackgroundColor).toHaveBeenCalledTimes(1);
-    expect(mockTvChart.setCancelButtonIconColor).toHaveBeenCalledTimes(1);
-
-    expect(mockTvChart.setPrice).toHaveBeenCalledWith(Number(price));
+    expect(mockTvChart.setReverseButtonBorderColor).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setReverseButtonBackgroundColor).toHaveBeenCalledTimes(
+      1
+    );
+    expect(mockTvChart.setReverseButtonIconColor).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setCloseButtonBorderColor).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setCloseButtonBackgroundColor).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setCloseButtonIconColor).toHaveBeenCalledTimes(1);
+    expect(mockTvChart.setPrice).toHaveBeenCalledWith(price);
     expect(mockTvChart.setQuantity).toHaveBeenCalledWith(quantity);
     expect(mockTvChart.setText).toHaveBeenCalledWith(text);
-    expect(mockTvChart.setCancelTooltip).toHaveBeenCalledWith(cancelTooltip);
-    expect(mockTvChart.setEditable).toHaveBeenCalledWith(editable);
-    expect(mockTvChart.setModifyTooltip).toHaveBeenCalledWith(modifyTooltip);
+    expect(mockTvChart.setProtectTooltip).toHaveBeenCalledWith(protectTooltip);
+    expect(mockTvChart.setCloseTooltip).toHaveBeenCalledWith(closeTooltip);
+    expect(mockTvChart.setReverseTooltip).toHaveBeenCalledWith(reverseTooltip);
     expect(mockTvChart.setTooltip).toHaveBeenCalledWith(tooltip);
-
     expect(mockTvChart.setExtendLeft).toHaveBeenCalledWith(extendLeft);
     expect(mockTvChart.setLineLength).toHaveBeenCalledWith(lineLength);
     expect(mockTvChart.setLineStyle).toHaveBeenCalledWith(lineStyle);
@@ -180,63 +180,67 @@ describe('addOrder function', () => {
     expect(mockTvChart.setQuantityTextColor).toHaveBeenCalledWith(
       quantityTextColor
     );
-    expect(mockTvChart.setCancelButtonBorderColor).toHaveBeenCalledWith(
-      cancelButtonBorderColor
+    expect(mockTvChart.setReverseButtonBorderColor).toHaveBeenCalledWith(
+      reverseButtonBorderColor
     );
-    expect(mockTvChart.setCancelButtonBackgroundColor).toHaveBeenCalledWith(
-      cancelButtonBackgroundColor
+    expect(mockTvChart.setReverseButtonBackgroundColor).toHaveBeenCalledWith(
+      reverseButtonBackgroundColor
     );
-    expect(mockTvChart.setCancelButtonIconColor).toHaveBeenCalledWith(
-      cancelButtonIconColorString
+    expect(mockTvChart.setReverseButtonIconColor).toHaveBeenCalledWith(
+      reverseButtonIconColor
     );
-
+    expect(mockTvChart.setCloseButtonBorderColor).toHaveBeenCalledWith(
+      closeButtonBorderColor
+    );
+    expect(mockTvChart.setCloseButtonBackgroundColor).toHaveBeenCalledWith(
+      closeButtonBackgroundColor
+    );
+    expect(mockTvChart.setCloseButtonIconColor).toHaveBeenCalledWith(
+      closeButtonIconColor
+    );
     expect(db.add).toHaveBeenCalledTimes(1);
     expect(db.add).toHaveBeenCalledWith(
-      orderData,
-      orderStyle,
+      positionData,
+      positionStyle,
       mockTvChart,
-      ORDER_LINE
+      POSITION_LINE
     );
-
     expect(result.error).toBe(undefined);
   });
 
-  it(`should emit message onMove callback`, done => {
+  it(`should emit message Reverse callback`, done => {
     const onInteraction$ = new Subject();
     onInteraction$.subscribe(message => {
-      if (message.type === ON_ORDER_MOVE) {
+      if (message.type === ON_POSITION_REVERSE) {
         const expectedMessage = {
-          type: ON_ORDER_MOVE,
+          type: ON_POSITION_REVERSE,
           line: {
             id: 1,
             price: 10,
           },
-          update: {
-            price: 180,
-          },
         };
         expect(db.get).toHaveBeenCalledWith(
           expectedMessage.line.id,
-          ORDER_LINE
+          POSITION_LINE
         );
         expect(message).toEqual(expectedMessage);
         done();
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
-    expect(mockTvChart.onMove).toHaveBeenCalledTimes(1);
-    const onMove = mockTvChart.onMove.mock.calls[0][0];
+    addPosition(tvUtil, db, onInteraction$, position);
+    expect(mockTvChart.onReverse).toHaveBeenCalledTimes(1);
+    const onReverse = mockTvChart.onReverse.mock.calls[0][0];
     global.getPrice = jest.fn().mockImplementation(() => 180);
-    onMove();
+    onReverse();
   });
 
   it(`should emit message onModify callback`, done => {
     const onInteraction$ = new Subject();
     onInteraction$.subscribe(message => {
-      if (message.type === ON_ORDER_MODIFY) {
+      if (message.type === ON_POSITION_MODIFY) {
         const expectedMessage = {
-          type: ON_ORDER_MODIFY,
+          type: ON_POSITION_MODIFY,
           line: {
             id: 1,
             price: 10,
@@ -244,24 +248,24 @@ describe('addOrder function', () => {
         };
         expect(db.get).toHaveBeenCalledWith(
           expectedMessage.line.id,
-          ORDER_LINE
+          POSITION_LINE
         );
         expect(message).toEqual(expectedMessage);
         done();
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
+    addPosition(tvUtil, db, onInteraction$, position);
     const onModify = mockTvChart.onModify.mock.calls[0][0];
     onModify();
   });
 
-  it(`should emit message onCancel callback`, done => {
+  it(`should emit message onClose callback`, done => {
     const onInteraction$ = new Subject();
     onInteraction$.subscribe(message => {
-      if (message.type === ON_ORDER_CANCEL) {
+      if (message.type === ON_POSITION_CLOSE) {
         const expectedMessage = {
-          type: ON_ORDER_CANCEL,
+          type: ON_POSITION_CLOSE,
           line: {
             id: 1,
             price: 10,
@@ -273,9 +277,9 @@ describe('addOrder function', () => {
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
+    addPosition(tvUtil, db, onInteraction$, position);
 
-    const onCancel = mockTvChart.onCancel.mock.calls[0][0];
-    onCancel();
+    const onClose = mockTvChart.onClose.mock.calls[0][0];
+    onClose();
   });
 });

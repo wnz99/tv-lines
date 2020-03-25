@@ -1,8 +1,11 @@
 const u = require('updeep');
+const { lineType } = require('../../const');
 
 module.exports = (tvUtil, db, onInteraction$, orderId, orderUpdate) => {
   const { data, style } = orderUpdate;
-  const prevOrder = db.get(orderId);
+  const { ORDER_LINE } = lineType;
+
+  const prevOrder = db.get(orderId, ORDER_LINE);
 
   data.id = orderId;
   const order = {

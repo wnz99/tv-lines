@@ -7,7 +7,7 @@ describe('makeIntercationMsg function', () => {
     const order = { id: 1 };
     const msg = makeIntercationMsg('addOrder', order);
 
-    expect(msg).toEqual({ type: 'addOrder', order, timestamp });
+    expect(msg).toEqual({ type: 'addOrder', line: { ...order }, timestamp });
     jest.spyOn(global.Date, 'now').mockRestore();
   });
 });

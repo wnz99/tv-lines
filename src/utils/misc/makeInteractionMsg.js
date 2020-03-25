@@ -1,4 +1,4 @@
-module.exports = (type, order) => {
+module.exports = (type, data) => {
   const timestamp = new Date(Date.now()).getTime();
-  return { type, timestamp, order };
+  return { type, timestamp, line: { ...data } };
 };

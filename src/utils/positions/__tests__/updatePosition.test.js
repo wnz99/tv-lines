@@ -1,16 +1,16 @@
 /* global tvChart */
-const updateOrder = require('../updateOrder');
+const updatePosition = require('../updatePosition');
 const db = require('../../../lib/db');
 const { lineType } = require('../../../const');
 
 jest.mock('../../../lib/db');
 
-const orderId = 1;
+const positionId = 1;
 
 const remove = jest.fn();
 db.get.mockImplementation(() => ({
   data: {
-    id: orderId,
+    id: positionId,
     price: 10,
     quantity: 100,
   },
@@ -25,18 +25,18 @@ db.get.mockImplementation(() => ({
   },
 }));
 
-const { ORDER_LINE } = lineType;
+const { POSITION_LINE } = lineType;
 
 let mockTvChart;
 let tvUtil;
 
-describe('updateOrder function', () => {
+describe('updatePosition function', () => {
   beforeEach(() => {
     mockTvChart = tvChart();
     db.get.mockClear();
     remove.mockClear();
     tvUtil = {
-      order: { add: jest.fn().mockImplementation(() => mockTvChart) },
+      position: { add: jest.fn().mockImplementation(() => mockTvChart) },
       tvChart: mockTvChart,
     };
   });
@@ -45,7 +45,7 @@ describe('updateOrder function', () => {
     remove.mockImplementationOnce(() => {
       throw Error('Test error');
     });
-    const orderUpdate = {
+    const positionUpdate = {
       data: {
         price: 40,
         quantity: 2000,
@@ -56,12 +56,12 @@ describe('updateOrder function', () => {
         lineWidth: 8,
       },
     };
-    const result = updateOrder(tvUtil, db, null, orderId, orderUpdate);
+    const result = updatePosition(tvUtil, db, null, positionId, positionUpdate);
     expect(result).toEqual({ error: 'Test error' });
   });
 
-  it(`should update an order`, () => {
-    const orderUpdate = {
+  it(`should update a position`, () => {
+    const positionUpdate = {
       data: {
         price: 40,
         quantity: 2000,
@@ -73,9 +73,9 @@ describe('updateOrder function', () => {
       },
     };
 
-    const expectedUpdatedOrder = {
+    const expectedUpdatedPosition = {
       data: {
-        id: orderId,
+        id: positionId,
         price: 40,
         quantity: 2000,
       },
@@ -87,11 +87,11 @@ describe('updateOrder function', () => {
       },
     };
 
-    const result = updateOrder(tvUtil, db, null, orderId, orderUpdate);
+    const result = updatePosition(tvUtil, db, null, positionId, positionUpdate);
     expect(db.get).toHaveBeenCalledTimes(1);
-    expect(db.get).toHaveBeenCalledWith(orderId, ORDER_LINE);
+    expect(db.get).toHaveBeenCalledWith(positionId, POSITION_LINE);
     expect(remove).toHaveBeenCalledTimes(1);
-    expect(tvUtil.order.add).toHaveBeenCalledWith(expectedUpdatedOrder);
+    expect(tvUtil.position.add).toHaveBeenCalledWith(expectedUpdatedPosition);
     expect(result).toBe(mockTvChart);
   });
 });

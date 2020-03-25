@@ -29,6 +29,20 @@ global.tvChart = function tvChart() {
     setCancelButtonBorderColor: jest.fn().mockImplementation(() => obj),
     setCancelButtonBackgroundColor: jest.fn().mockImplementation(() => obj),
     setCancelButtonIconColor: jest.fn().mockImplementation(() => obj),
+    // Positions
+    createPositionLine: jest.fn().mockImplementation(() => obj),
+    onReverse: jest.fn().mockImplementation(() => obj),
+    onClose: jest.fn().mockImplementation(() => obj),
+    setProtectTooltip: jest.fn().mockImplementation(() => obj),
+    setReverseTooltip: jest.fn().mockImplementation(() => obj),
+    setCloseTooltip: jest.fn().mockImplementation(() => obj),
+    setReverseButtonBorderColor: jest.fn().mockImplementation(() => obj),
+    setReverseButtonBackgroundColor: jest.fn().mockImplementation(() => obj),
+    setReverseButtonIconColor: jest.fn().mockImplementation(() => obj),
+    setCloseButtonBorderColor: jest.fn().mockImplementation(() => obj),
+    setCloseButtonBackgroundColor: jest.fn().mockImplementation(() => obj),
+    setCloseButtonIconColor: jest.fn().mockImplementation(() => obj),
+
     remove: jest.fn(),
   };
 

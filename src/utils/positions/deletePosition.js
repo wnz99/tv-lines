@@ -1,9 +1,9 @@
 const { lineType } = require('../../const');
 
-const { ORDER_LINE } = lineType;
+const { POSITION_LINE } = lineType;
 
 module.exports = (tvUtil, db, onInteraction$, id) => {
-  const { tvLine } = db.get(id, ORDER_LINE);
+  const { tvLine } = db.get(id, POSITION_LINE);
   tvLine.remove();
-  return db.del(id, ORDER_LINE);
+  return db.del(id, POSITION_LINE);
 };
