@@ -54,7 +54,7 @@ const orderStyle = {
 
 const orderData = {
   id: 1,
-  price: 10,
+  price: '10',
   quantity: 100,
   tooltip: 'order tooltip',
   modifyTooltip: 'modify tooltip test',
@@ -149,7 +149,7 @@ describe('addOrder function', () => {
     expect(mockTvChart.setCancelButtonBackgroundColor).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setCancelButtonIconColor).toHaveBeenCalledTimes(1);
 
-    expect(mockTvChart.setPrice).toHaveBeenCalledWith(price);
+    expect(mockTvChart.setPrice).toHaveBeenCalledWith(Number(price));
     expect(mockTvChart.setQuantity).toHaveBeenCalledWith(quantity);
     expect(mockTvChart.setText).toHaveBeenCalledWith(text);
     expect(mockTvChart.setCancelTooltip).toHaveBeenCalledWith(cancelTooltip);

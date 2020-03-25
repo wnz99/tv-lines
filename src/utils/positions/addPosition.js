@@ -59,7 +59,7 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
 
     // General properties methods
     positionLine
-      .setPrice(price)
+      .setPrice(Number(price))
       .setQuantity(quantity)
       .setText(text)
       .setProtectTooltip(protectTooltip)

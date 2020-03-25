@@ -56,7 +56,7 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
 
     // General properties methods
     orderLine
-      .setPrice(price)
+      .setPrice(Number(price))
       .setQuantity(quantity)
       .setText(text)
       .setCancelTooltip(cancelTooltip)
