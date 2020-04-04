@@ -25,7 +25,7 @@ module.exports = {
     quantityTextColor: 'rgb(255, 255, 255)',
     cancelButtonBorderColor: 'rgb(255, 0, 0)',
     cancelButtonBackgroundColor: 'rgba(255, 255, 255, 0.75)',
-    cancelButtonIconColorString: 'rgb(255, 0, 0)',
+    cancelButtonIconColor: 'rgb(255, 0, 0)',
   },
 
   defaultPositionProps: {

@@ -39,7 +39,7 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
     quantityTextColor,
     cancelButtonBorderColor,
     cancelButtonBackgroundColor,
-    cancelButtonIconColorString,
+    cancelButtonIconColor,
   } = fullOrderStyle;
 
   const {
@@ -100,7 +100,7 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
       .setQuantityTextColor(quantityTextColor)
       .setCancelButtonBorderColor(cancelButtonBorderColor)
       .setCancelButtonBackgroundColor(cancelButtonBackgroundColor)
-      .setCancelButtonIconColor(cancelButtonIconColorString);
+      .setCancelButtonIconColor(cancelButtonIconColor);
 
     db.add(u(data, {}), style, orderLine, ORDER_LINE);
 
