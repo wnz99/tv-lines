@@ -61,6 +61,7 @@ const orderData = {
   cancelTooltip: 'cancel tooltip test',
   editable: true,
   text: 'BUY: Price 10',
+  interactions: ['onCancel', 'onModify', 'onMove'],
 };
 
 const order = { data: orderData, style: orderStyle };
@@ -219,6 +220,7 @@ describe('addOrder function', () => {
           expectedMessage.line.id,
           ORDER_LINE
         );
+
         expect(message).toEqual(expectedMessage);
         done();
       }

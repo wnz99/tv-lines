@@ -64,6 +64,7 @@ const positionData = {
   reverseTooltip: 'Reverse tooltip test',
   closeTooltip: 'Close tooltip test',
   text: 'STOP: 73.5 (5,64%)',
+  interactions: ['onClose', 'onModify', 'onReverse'],
 };
 
 const position = { data: positionData, style: positionStyle };
@@ -230,9 +231,9 @@ describe('addPosition function', () => {
 
     addPosition(tvUtil, db, onInteraction$, position);
     expect(mockTvChart.onReverse).toHaveBeenCalledTimes(1);
-    const onReverse = mockTvChart.onReverse.mock.calls[0][0];
+    const onReverseCb = mockTvChart.onReverse.mock.calls[0][0];
     global.getPrice = jest.fn().mockImplementation(() => 180);
-    onReverse();
+    onReverseCb();
   });
 
   it(`should emit message onModify callback`, done => {

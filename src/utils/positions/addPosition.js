@@ -4,6 +4,7 @@ const {
   interactionType,
   defaultPositionStyleProps,
   lineType,
+  tvInteractionType,
 } = require('../../const');
 const makeInteractionMsg = require('../misc/makeInteractionMsg');
 
@@ -12,6 +13,7 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
   const { data, style } = position;
   const fullPositionData = { ...defaultPositionProps, ...data };
   const fullPositionStyle = { ...defaultPositionStyleProps, ...style };
+
   const {
     id,
     price,
@@ -21,6 +23,7 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
     reverseTooltip,
     closeTooltip,
     text,
+    interactions,
   } = fullPositionData;
 
   const {
@@ -52,6 +55,14 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
     ON_POSITION_REVERSE,
   } = interactionType;
 
+  const { ON_CLOSE, ON_MODIFY, ON_REVERSE } = tvInteractionType;
+
+  const interactionsMap = {
+    [ON_CLOSE]: ON_POSITION_CLOSE,
+    [ON_MODIFY]: ON_POSITION_MODIFY,
+    [ON_REVERSE]: ON_POSITION_REVERSE,
+  };
+
   const { POSITION_LINE } = lineType;
 
   try {
@@ -65,22 +76,21 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
       .setProtectTooltip(protectTooltip)
       .setCloseTooltip(closeTooltip)
       .setReverseTooltip(reverseTooltip)
-      .setTooltip(tooltip)
-      .onReverse(function onMove() {
-        onInteraction$.next(
-          makeInteractionMsg(ON_POSITION_REVERSE, db.get(id, POSITION_LINE))
-        );
-      })
-      .onModify(function onModify() {
-        onInteraction$.next(
-          makeInteractionMsg(ON_POSITION_MODIFY, db.get(id, POSITION_LINE))
-        );
-      })
-      .onClose(function onCancel() {
-        onInteraction$.next(
-          makeInteractionMsg(ON_POSITION_CLOSE, db.get(id, POSITION_LINE))
-        );
-      });
+      .setTooltip(tooltip);
+
+    // Callbacks
+    interactions.forEach(interactionMethod => {
+      if (Object.values(tvInteractionType).includes(interactionMethod)) {
+        positionLine[interactionMethod](() => {
+          const message = makeInteractionMsg(
+            interactionsMap[interactionMethod],
+            db.get(id, POSITION_LINE)
+          );
+
+          onInteraction$.next(message);
+        });
+      }
+    });
 
     // Style methods
     positionLine
