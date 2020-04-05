@@ -7,6 +7,7 @@ module.exports = {
   defaultOrderProps: {
     modifyTooltip: 'Modify Order',
     cancelToolTip: 'Cancel Order',
+    interactions: [],
   },
 
   defaultOrderStyleProps: {
@@ -32,6 +33,7 @@ module.exports = {
     protectTooltip: 'Protect Position',
     reverseTooltip: 'Reverse Position',
     closeTooltip: 'Close Position',
+    interactions: [],
   },
 
   defaultPositionStyleProps: {
@@ -58,12 +60,20 @@ module.exports = {
 
   interactionType: {
     ON_ORDER_ADD: 'onOrderAdd',
-    ON_ORDER_MOVE: 'onOrderMove',
-    ON_ORDER_MODIFY: 'onOrderMofify',
     ON_ORDER_CANCEL: 'onOrderCancel',
+    ON_ORDER_MODIFY: 'onOrderMofify',
+    ON_ORDER_MOVE: 'onOrderMove',
     ON_POSITION_ADD: 'onPositionAdd',
     ON_POSITION_CLOSE: 'onPositionClose',
     ON_POSITION_MODIFY: 'onPositionMofify',
     ON_POSITION_REVERSE: 'onPositionReverse',
+  },
+
+  tvInteractionType: {
+    ON_CANCEL: 'onCancel',
+    ON_CLOSE: 'onClose',
+    ON_MODIFY: 'onModify',
+    ON_MOVE: 'onMove',
+    ON_REVERSE: 'onReverse',
   },
 };

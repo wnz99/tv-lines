@@ -4,6 +4,7 @@ const {
   interactionType,
   defaultOrderStyleProps,
   lineType,
+  tvInteractionType,
 } = require('../../const');
 const makeInteractionMsg = require('../misc/makeInteractionMsg');
 
@@ -21,6 +22,7 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
     cancelTooltip,
     editable,
     text,
+    interactions,
   } = fullOrderData;
 
   const {
@@ -49,6 +51,14 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
     ON_ORDER_MOVE,
   } = interactionType;
 
+  const { ON_CANCEL, ON_MODIFY, ON_MOVE } = tvInteractionType;
+
+  const interactionsMap = {
+    [ON_CANCEL]: ON_ORDER_CANCEL,
+    [ON_MODIFY]: ON_ORDER_MODIFY,
+    [ON_MOVE]: ON_ORDER_MOVE,
+  };
+
   const { ORDER_LINE } = lineType;
 
   try {
@@ -62,26 +72,27 @@ module.exports = (tvUtil, db, onInteraction$, order) => {
       .setCancelTooltip(cancelTooltip)
       .setEditable(editable)
       .setModifyTooltip(modifyTooltip)
-      .setTooltip(tooltip)
-      .onMove(function onMove() {
-        const message = {
-          ...makeInteractionMsg(ON_ORDER_MOVE, db.get(id, ORDER_LINE)),
-          update: {
-            price: this.getPrice(),
-          },
-        };
-        onInteraction$.next(message);
-      })
-      .onModify(function onModify() {
-        onInteraction$.next(
-          makeInteractionMsg(ON_ORDER_MODIFY, db.get(id, ORDER_LINE))
-        );
-      })
-      .onCancel(function onCancel() {
-        onInteraction$.next(
-          makeInteractionMsg(ON_ORDER_CANCEL, db.get(id, ORDER_LINE))
-        );
-      });
+      .setTooltip(tooltip);
+
+    // Callbacks
+    interactions.forEach(interactionMethod => {
+      if (Object.values(tvInteractionType).includes(interactionMethod)) {
+        orderLine[interactionMethod](function() {
+          const message = makeInteractionMsg(
+            interactionsMap[interactionMethod],
+            db.get(id, ORDER_LINE)
+          );
+
+          if (interactionMethod === ON_MOVE) {
+            message.update = {
+              price: this.getPrice(),
+            };
+          }
+
+          onInteraction$.next(message);
+        });
+      }
+    });
 
     // Style methods
     orderLine
