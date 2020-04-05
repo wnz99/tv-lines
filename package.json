@@ -9,8 +9,8 @@
     ]
   },
   "scripts": {
-    "develop": "webpack --mode development --watch",
-    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "build": "rm -rf dist/ && rollup -c",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --colors",
@@ -36,6 +36,8 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "eslint": "^6.1.0",
@@ -54,6 +56,10 @@
     "prettier": "1.18.2",
     "prettier-eslint": "^9.0.0",
     "pretty-quick": "^2.0.1",
+    "rollup": "^2.3.3",
+    "rollup-plugin-babel-minify": "^10.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
@@ -71,7 +77,7 @@
   "lint-staged": {
     "*.js": [
       "eslint --fix",
-      "pretty-quick --staged && echo 'run hook'"
+      "pretty-quick --staged"
     ]
   }
 }
