@@ -27,8 +27,8 @@ describe('deletePosition function', () => {
         quatity: 1,
       },
     });
-    const oositionId = 1;
-    const result = deletePosition(tvUtil, db, onInteraction$, oositionId);
+    const positionId = 1;
+    const result = deletePosition(tvUtil, db, onInteraction$, positionId);
     expect(result).toBe(true);
     expect(mockTvChart.remove).toHaveBeenCalledTimes(1);
   });
