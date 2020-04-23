@@ -6,6 +6,7 @@ const updateOrder = require('../utils/orders/updateOrder');
 const addPosition = require('../utils/positions/addPosition');
 const deletePosition = require('../utils/positions/deletePosition');
 const updatePosition = require('../utils/positions/updatePosition');
+const getPosition = require('../utils/positions/getPosition');
 const db = require('./db');
 
 module.exports = tvChart => {
@@ -28,6 +29,7 @@ module.exports = tvChart => {
   tvUtil.position.add = compose(addPosition);
   tvUtil.position.delete = compose(deletePosition);
   tvUtil.position.update = compose(updatePosition);
+  tvUtil.position.get = compose(getPosition);
 
   return tvUtil;
 };

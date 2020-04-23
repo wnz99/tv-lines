@@ -6,7 +6,12 @@ describe('tvUtil function', () => {
     const methods = bindMethods();
 
     expect(methods.order).toContainAllKeys(['add', 'delete', 'update']);
-    expect(methods.position).toContainAllKeys(['add', 'delete', 'update']);
+    expect(methods.position).toContainAllKeys([
+      'add',
+      'delete',
+      'update',
+      'get',
+    ]);
     expect(methods).toContainKey('interactions$');
     expect(methods.interactions$).toBeInstanceOf(Subject);
   });
