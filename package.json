@@ -64,7 +64,7 @@
     "rollup-plugin-uglify": "^6.0.4"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "md5": "^2.2.1",
     "rxjs": "^6.5.3",
     "updeep": "^1.2.0"
