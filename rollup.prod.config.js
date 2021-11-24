@@ -2,7 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
-import minify from 'rollup-plugin-babel-minify';
+import uglify from '@lopatnov/rollup-plugin-uglify';
 
 export default {
   input: 'src/index.js',
@@ -16,6 +16,6 @@ export default {
     commonjs(),
     globals(),
     builtins(),
-    minify({ sourceMap: false, comments: false }),
+    uglify(),
   ],
 };
