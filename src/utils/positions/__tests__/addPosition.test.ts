@@ -113,7 +113,7 @@ declare global {
 
 describe('addPosition function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart() as PositionLineMethods;
+    mockTvChart = tvChart() as unknown as PositionLineMethods;
     tvUtil = {
       tvChart: mockTvChart,
     } as TvUtil;
