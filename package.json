@@ -1,6 +1,6 @@
 {
   "name": "tv-lines",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "standard": {
@@ -11,10 +11,11 @@
   "scripts": {
     "dev": "rm -rf dist/ && rollup -c rollup.dev.config.js --watch",
     "build": "rm -rf dist/ && rollup -c rollup.prod.config.js",
+    "lint": "eslint ./src --fix --ext .js,.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --colors",
-    "release": "np"
+    "ts:check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -26,48 +27,43 @@
     "url": "https://github.com/wnz99/tv-lines/issues"
   },
   "homepage": "https://github.com/wnz99/tv-lines#readme",
-  "jest": {
-    "setupFilesAfterEnv": [
-      "jest-extended"
-    ],
-    "setupFiles": [
-      "<rootDir>/setupTests.js"
-    ],
-    "testEnvironment": "node"
-  },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^11.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.1",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.9.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-config-prettier": "^6.4.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.16.0",
-    "eslint-plugin-react-hooks": "^1.7.0",
-    "git-branch-is": "^3.1.0",
-    "jest": "^24.9.0",
-    "jest-extended": "^0.11.2",
-    "lint-staged": "^10.1.2",
-    "prettier": "^2",
-    "prettier-eslint": "^9.0.0",
-    "pretty-quick": "^2.0.1",
-    "rollup": "^2.3.3",
+    "@babel/preset-typescript": "^7.16.5",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.1",
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "^4.14.178",
+    "@types/node": "^16.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "babel-jest": "^27.4.5",
+    "eslint": "^8.4.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "git-branch-is": "^4.0.0",
+    "jest": "^27.4.5",
+    "jest-extended": "^1.2.0",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.5.1",
+    "prettier-eslint": "^13.0.0",
+    "pretty-quick": "^3.1.2",
+    "rollup": "^2.61.1",
     "rollup-plugin-babel-minify": "^10.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "rollup-plugin-sourcemaps": "^0.5.0",
-    "rollup-plugin-uglify": "^6.0.4"
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-uglify": "^6.0.4",
+    "ts-jest": "^27.1.1",
+    "typescript": "^4.5.4"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
-    "md5": "^2.2.1",
-    "rxjs": "^6.5.3",
-    "updeep": "^1.2.0"
+    "lodash": "^4.17.21",
+    "md5": "^2.3.0",
+    "rxjs": "^7.4.0"
   },
   "husky": {
     "hooks": {

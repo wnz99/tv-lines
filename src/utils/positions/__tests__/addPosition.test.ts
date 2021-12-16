@@ -1,34 +1,62 @@
 /* global tvChart */
-const { Subject } = require('rxjs');
-const addPosition = require('../addPosition');
-const db = require('../../../lib/db');
-const makeInteractionMsg = require('../../misc/makeInteractionMsg');
-const {
-  interactionType,
-  defaultPositionStyleProps,
-  lineType,
-} = require('../../../const');
+import { Subject } from 'rxjs';
+
+import addPosition from '../addPosition';
+import db, { Db, DbLine } from '../../../lib/db';
+import makeInteractionMsg from '../../misc/makeInteractionMsg';
+import {
+  InteractionType,
+  LineType,
+  PositionLineMethods,
+  TvUtil,
+  Position,
+  GeneralPositionProps,
+  InteractionMsg,
+  TvInteractionType,
+} from '../../../types';
+import { defaultPositionStyleProps } from '../../../const';
 
 jest.mock('../../../lib/db');
+
 jest.mock('../../misc/makeInteractionMsg');
-makeInteractionMsg.mockImplementation((type, position) => ({
+
+const mockMakeInteractionMsg = makeInteractionMsg as jest.MockedFunction<
+  typeof makeInteractionMsg
+>;
+
+mockMakeInteractionMsg.mockImplementation((type, position) => ({
   type,
   line: { ...position },
+  timestamp: 123,
 }));
 
-db.get.mockImplementation(() => ({
-  id: 1,
-  price: 10,
-}));
+const mockDb = db as jest.Mocked<Db>;
 
-const { POSITION_LINE } = lineType;
+mockDb.add.mockImplementation(() => {
+  return {
+    data: { id: '1', price: 10 },
+    style: {},
+    tvLine: {},
+  } as unknown as DbLine;
+});
+
+mockDb.get.mockImplementation(
+  () =>
+    ({
+      data: { id: '1', price: 10 },
+      style: {},
+      tvLine: {},
+    } as unknown as DbLine)
+);
+
+const { POSITION_LINE } = LineType;
 
 const {
   ON_POSITION_ADD,
   ON_POSITION_CLOSE,
   ON_POSITION_MODIFY,
   ON_POSITION_REVERSE,
-} = interactionType;
+} = InteractionType;
 
 const {
   bodyFont,
@@ -56,51 +84,63 @@ const positionStyle = {
 };
 
 const positionData = {
-  id: 1,
+  id: '1',
   price: 10,
-  quantity: 100,
+  quantity: '100',
   tooltip: 'Position tooltip',
   protectTooltip: 'Protect tooltip test',
   reverseTooltip: 'Reverse tooltip test',
   closeTooltip: 'Close tooltip test',
   text: 'STOP: 73.5 (5,64%)',
-  interactions: ['onClose', 'onModify', 'onReverse'],
+  interactions: [
+    TvInteractionType.ON_CLOSE,
+    TvInteractionType.ON_MODIFY,
+    TvInteractionType.ON_REVERSE,
+  ],
 };
 
-const position = { data: positionData, style: positionStyle };
+const position = { data: positionData, style: positionStyle } as Position &
+  GeneralPositionProps;
 
-let mockTvChart;
+let mockTvChart: any;
 
-let tvUtil;
+let tvUtil: TvUtil;
+
+declare global {
+  function tvChart(): PositionLineMethods;
+  function getPrice(): jest.Mocked<number>;
+}
 
 describe('addPosition function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart();
+    mockTvChart = tvChart() as PositionLineMethods;
     tvUtil = {
       tvChart: mockTvChart,
-    };
-    db.get.mockClear();
-    db.del.mockClear();
+    } as TvUtil;
+    mockDb.get.mockClear();
+    mockDb.del.mockClear();
   });
 
   it(`should return error`, () => {
-    const onInteraction$ = new Subject();
+    const onInteraction$ = new Subject<InteractionMsg>();
     mockTvChart.createPositionLine.mockImplementation(() => {
       throw Error('Test error');
     });
-    const result = addPosition(tvUtil, db, onInteraction$, position);
+    const result = addPosition(tvUtil, mockDb, onInteraction$, position);
     expect(result).toEqual({ error: 'Test error' });
   });
 
-  it(`should add a position`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should add a position`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       const expectedMessage = {
         type: ON_POSITION_ADD,
         line: {
-          id: 1,
-          price: 10,
+          data: { id: '1', price: 10 },
+          style: {},
+          tvLine: {},
         },
+        timestamp: 123,
       };
       expect(message).toEqual(expectedMessage);
       done();
@@ -117,8 +157,11 @@ describe('addPosition function', () => {
       },
       style: { extendLeft, lineLength, lineStyle, lineWidth },
     } = position;
-    const result = addPosition(tvUtil, db, onInteraction$, position);
+
+    const result = addPosition(tvUtil, mockDb, onInteraction$, position);
+
     expect(result).toBe(mockTvChart);
+
     expect(mockTvChart.createPositionLine).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setPrice).toHaveBeenCalledTimes(1);
     expect(mockTvChart.setQuantity).toHaveBeenCalledTimes(1);
@@ -199,29 +242,31 @@ describe('addPosition function', () => {
     expect(mockTvChart.setCloseButtonIconColor).toHaveBeenCalledWith(
       closeButtonIconColor
     );
-    expect(db.add).toHaveBeenCalledTimes(1);
-    expect(db.add).toHaveBeenCalledWith(
+    expect(mockDb.add).toHaveBeenCalledTimes(1);
+    expect(mockDb.add).toHaveBeenCalledWith(
       positionData,
       positionStyle,
       mockTvChart,
       POSITION_LINE
     );
-    expect(result.error).toBe(undefined);
+    expect(result).not.toBe(undefined);
   });
 
-  it(`should emit message Reverse callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message Reverse callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_POSITION_REVERSE) {
         const expectedMessage = {
           type: ON_POSITION_REVERSE,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
+          timestamp: 123,
         };
         expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.line.id,
+          expectedMessage.line.data.id,
           POSITION_LINE
         );
         expect(message).toEqual(expectedMessage);
@@ -236,19 +281,21 @@ describe('addPosition function', () => {
     onReverseCb();
   });
 
-  it(`should emit message onModify callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message onModify callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_POSITION_MODIFY) {
         const expectedMessage = {
           type: ON_POSITION_MODIFY,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
+          timestamp: 123,
         };
         expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.line.id,
+          expectedMessage.line.data.id,
           POSITION_LINE
         );
         expect(message).toEqual(expectedMessage);
@@ -261,16 +308,18 @@ describe('addPosition function', () => {
     onModify();
   });
 
-  it(`should emit message onClose callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message onClose callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_POSITION_CLOSE) {
         const expectedMessage = {
           type: ON_POSITION_CLOSE,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
+          timestamp: 123,
         };
         expect(message).toEqual(expectedMessage);
         expect(db.del).toHaveBeenCalledTimes(0);
