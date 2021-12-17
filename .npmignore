@@ -9,6 +9,7 @@
 .gitignore
 .vscode
 .rpt2_cache
+.prettierrc
 __tests__/
 babel.config.js
 coverage
