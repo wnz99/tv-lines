@@ -1,18 +1,37 @@
 /* global tvChart */
-const updatePosition = require('../updatePosition');
-const db = require('../../../lib/db');
-const { lineType } = require('../../../const');
+import { Subject } from 'rxjs';
+
+import updatePosition from '../updatePosition';
+import db, { Db } from '../../../lib/db';
+import {
+  LineType,
+  OrderLineMethods,
+  TvUtil,
+  InteractionMsg,
+} from '../../../types';
 
 jest.mock('../../../lib/db');
 
-const positionId = 1;
+const positionId = '1';
+
+declare global {
+  function tvChart(): OrderLineMethods;
+  function getPrice(): jest.Mocked<number>;
+}
 
 const remove = jest.fn();
-db.get.mockImplementation(() => ({
+
+const mockDb = db as jest.Mocked<Db>;
+
+const mockTvUtil = global.tvChart() as OrderLineMethods;
+
+mockTvUtil.remove = remove;
+
+mockDb.get.mockImplementation(() => ({
   data: {
     id: positionId,
     price: 10,
-    quantity: 100,
+    quantity: '100',
   },
   style: {
     extendLeft: true,
@@ -20,25 +39,29 @@ db.get.mockImplementation(() => ({
     lineStyle: 5,
     lineWidth: 6,
   },
-  tvLine: {
-    remove,
-  },
+  tvLine: mockTvUtil,
 }));
 
-const { POSITION_LINE } = lineType;
+const { POSITION_LINE } = LineType;
 
-let mockTvChart;
-let tvUtil;
+let mockTvChart: any;
+
+let tvUtil: TvUtil;
+
+let onInteraction$: Subject<InteractionMsg>;
 
 describe('updatePosition function', () => {
   beforeEach(() => {
     mockTvChart = tvChart();
-    db.get.mockClear();
+    mockDb.get.mockClear();
     remove.mockClear();
     tvUtil = {
+      order: {},
       position: { add: jest.fn().mockImplementation(() => mockTvChart) },
       tvChart: mockTvChart,
-    };
+      isBrowser: true,
+      interactions$: onInteraction$,
+    } as unknown as TvUtil;
   });
 
   it(`should return error`, () => {
@@ -48,7 +71,7 @@ describe('updatePosition function', () => {
     const positionUpdate = {
       data: {
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -56,7 +79,10 @@ describe('updatePosition function', () => {
         lineWidth: 8,
       },
     };
-    const result = updatePosition(tvUtil, db, null, positionId, positionUpdate);
+    const result = updatePosition(tvUtil, db, onInteraction$, {
+      id: positionId,
+      update: positionUpdate,
+    });
     expect(result).toEqual({ error: 'Test error' });
   });
 
@@ -64,7 +90,7 @@ describe('updatePosition function', () => {
     const positionUpdate = {
       data: {
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -77,7 +103,7 @@ describe('updatePosition function', () => {
       data: {
         id: positionId,
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -87,7 +113,10 @@ describe('updatePosition function', () => {
       },
     };
 
-    const result = updatePosition(tvUtil, db, null, positionId, positionUpdate);
+    const result = updatePosition(tvUtil, db, onInteraction$, {
+      id: positionId,
+      update: positionUpdate,
+    });
     expect(db.get).toHaveBeenCalledTimes(1);
     expect(db.get).toHaveBeenCalledWith(positionId, POSITION_LINE);
     expect(remove).toHaveBeenCalledTimes(1);

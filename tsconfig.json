@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "target": "esnext",
+    "module": "commonjs",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "incremental": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*", "package.json"],
+  "exclude": ["dist", "node_modules", ".vscode", ".git", ".idea"]
+}

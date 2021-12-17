@@ -1,34 +1,58 @@
 /* global tvChart */
-const { Subject } = require('rxjs');
-const addOrder = require('../addOrder');
-const db = require('../../../lib/db');
-const makeInteractionMsg = require('../../misc/makeInteractionMsg');
-const {
-  interactionType,
-  defaultOrderStyleProps,
-  lineType,
-} = require('../../../const');
+import { Subject } from 'rxjs';
+
+import addOrder from '../addOrder';
+import db, { Db, DbLine } from '../../../lib/db';
+import makeInteractionMsg from '../../misc/makeInteractionMsg';
+import { defaultOrderStyleProps } from '../../../const';
+import {
+  InteractionType,
+  LineType,
+  OrderLineMethods,
+  TvUtil,
+  Order,
+  GeneralOrderProps,
+  InteractionMsg,
+} from '../../../types';
 
 jest.mock('../../../lib/db');
+
 jest.mock('../../misc/makeInteractionMsg');
-makeInteractionMsg.mockImplementation((type, order) => ({
-  type,
-  line: { ...order },
-}));
 
-db.get.mockImplementation(() => ({
-  id: 1,
-  price: 10,
-}));
+const mockMakeInteractionMsg = makeInteractionMsg as jest.MockedFunction<
+  typeof makeInteractionMsg
+>;
 
-const { ORDER_LINE } = lineType;
+mockMakeInteractionMsg.mockImplementation((type, order) => {
+  return {
+    type,
+    line: { ...order },
+    timestamp: 123,
+  };
+});
 
-const {
-  ON_ORDER_ADD,
-  ON_ORDER_CANCEL,
-  ON_ORDER_MODIFY,
-  ON_ORDER_MOVE,
-} = interactionType;
+const mockDb = db as jest.Mocked<Db>;
+
+mockDb.add.mockImplementation(() => {
+  return {
+    data: { id: '1', price: 10 },
+    style: {},
+    tvLine: {},
+  } as unknown as DbLine;
+});
+
+mockDb.get.mockImplementation(() => {
+  return {
+    data: { id: '1', price: 10 },
+    style: {},
+    tvLine: {},
+  } as unknown as DbLine;
+});
+
+const { ORDER_LINE } = LineType;
+
+const { ON_ORDER_ADD, ON_ORDER_CANCEL, ON_ORDER_MODIFY, ON_ORDER_MOVE } =
+  InteractionType;
 
 const {
   bodyFont,
@@ -53,52 +77,63 @@ const orderStyle = {
 };
 
 const orderData = {
-  id: 1,
+  id: '1',
   price: 10,
-  quantity: 100,
+  quantity: '100',
   tooltip: 'order tooltip',
-  modifyTooltip: 'modify tooltip test',
-  cancelTooltip: 'cancel tooltip test',
+  modifyToolTip: 'modify tooltip test',
+  cancelToolTip: 'cancel tooltip test',
   editable: true,
   text: 'BUY: Price 10',
   interactions: ['onCancel', 'onModify', 'onMove'],
 };
 
-const order = { data: orderData, style: orderStyle };
+const order = { data: orderData, style: orderStyle } as Order &
+  GeneralOrderProps;
 
-let mockTvChart;
+let mockTvChart: any;
 
-let tvUtil;
+let tvUtil: TvUtil;
+
+declare global {
+  function tvChart(): OrderLineMethods;
+  function getPrice(): jest.Mocked<number>;
+}
 
 describe('addOrder function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart();
+    mockTvChart = tvChart() as unknown as OrderLineMethods;
+
     tvUtil = {
       tvChart: mockTvChart,
-    };
-    db.get.mockClear();
-    db.del.mockClear();
+    } as TvUtil;
+    mockDb.get.mockClear();
+    mockDb.del.mockClear();
   });
 
   it(`should return error`, () => {
-    const onInteraction$ = new Subject();
+    const onInteraction$ = new Subject<InteractionMsg>();
     mockTvChart.createOrderLine.mockImplementation(() => {
       throw Error('Test error');
     });
 
-    const result = addOrder(tvUtil, db, onInteraction$, order);
+    const result = addOrder(tvUtil, mockDb, onInteraction$, order);
+
     expect(result).toEqual({ error: 'Test error' });
   });
 
-  it(`should add an order`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should add an order`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+
+    onInteraction$.subscribe((message) => {
       const expectedMessage = {
         type: ON_ORDER_ADD,
         line: {
-          id: 1,
-          price: 10,
+          data: { id: '1', price: 10 },
+          style: {},
+          tvLine: {},
         },
+        timestamp: 123,
       };
       expect(message).toEqual(expectedMessage);
       done();
@@ -109,15 +144,15 @@ describe('addOrder function', () => {
         price,
         quantity,
         tooltip,
-        modifyTooltip,
-        cancelTooltip,
+        modifyToolTip,
+        cancelToolTip,
         editable,
         text,
       },
       style: { extendLeft, lineLength, lineStyle, lineWidth },
     } = order;
 
-    const result = addOrder(tvUtil, db, onInteraction$, order);
+    const result = addOrder(tvUtil, mockDb, onInteraction$, order);
 
     expect(result).toBe(mockTvChart);
 
@@ -153,9 +188,9 @@ describe('addOrder function', () => {
     expect(mockTvChart.setPrice).toHaveBeenCalledWith(price);
     expect(mockTvChart.setQuantity).toHaveBeenCalledWith(quantity);
     expect(mockTvChart.setText).toHaveBeenCalledWith(text);
-    expect(mockTvChart.setCancelTooltip).toHaveBeenCalledWith(cancelTooltip);
+    expect(mockTvChart.setCancelTooltip).toHaveBeenCalledWith(cancelToolTip);
     expect(mockTvChart.setEditable).toHaveBeenCalledWith(editable);
-    expect(mockTvChart.setModifyTooltip).toHaveBeenCalledWith(modifyTooltip);
+    expect(mockTvChart.setModifyTooltip).toHaveBeenCalledWith(modifyToolTip);
     expect(mockTvChart.setTooltip).toHaveBeenCalledWith(tooltip);
 
     expect(mockTvChart.setExtendLeft).toHaveBeenCalledWith(extendLeft);
@@ -191,33 +226,37 @@ describe('addOrder function', () => {
       cancelButtonIconColor
     );
 
-    expect(db.add).toHaveBeenCalledTimes(1);
-    expect(db.add).toHaveBeenCalledWith(
+    expect(mockDb.add).toHaveBeenCalledTimes(1);
+    expect(mockDb.add).toHaveBeenCalledWith(
       orderData,
       orderStyle,
       mockTvChart,
       ORDER_LINE
     );
 
-    expect(result.error).toBe(undefined);
+    expect(result).not.toBe(undefined);
   });
 
-  it(`should emit message onMove callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message onMove callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    global.getPrice = jest.fn().mockImplementation(() => 180);
+
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_ORDER_MOVE) {
         const expectedMessage = {
           type: ON_ORDER_MOVE,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
           update: {
             price: 180,
           },
+          timestamp: 123,
         };
-        expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.line.id,
+        expect(mockDb.get).toHaveBeenCalledWith(
+          expectedMessage.line.data.id,
           ORDER_LINE
         );
 
@@ -226,26 +265,30 @@ describe('addOrder function', () => {
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
+    addOrder(tvUtil, mockDb, onInteraction$, order);
+
     expect(mockTvChart.onMove).toHaveBeenCalledTimes(1);
+
     const onMove = mockTvChart.onMove.mock.calls[0][0];
-    global.getPrice = jest.fn().mockImplementation(() => 180);
+
     onMove();
   });
 
-  it(`should emit message onModify callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message onModify callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_ORDER_MODIFY) {
         const expectedMessage = {
           type: ON_ORDER_MODIFY,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
+          timestamp: 123,
         };
-        expect(db.get).toHaveBeenCalledWith(
-          expectedMessage.line.id,
+        expect(mockDb.get).toHaveBeenCalledWith(
+          expectedMessage.line.data.id,
           ORDER_LINE
         );
         expect(message).toEqual(expectedMessage);
@@ -253,29 +296,31 @@ describe('addOrder function', () => {
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
+    addOrder(tvUtil, mockDb, onInteraction$, order);
     const onModify = mockTvChart.onModify.mock.calls[0][0];
     onModify();
   });
 
-  it(`should emit message onCancel callback`, done => {
-    const onInteraction$ = new Subject();
-    onInteraction$.subscribe(message => {
+  it(`should emit message onCancel callback`, (done) => {
+    const onInteraction$ = new Subject<InteractionMsg>();
+    onInteraction$.subscribe((message) => {
       if (message.type === ON_ORDER_CANCEL) {
         const expectedMessage = {
           type: ON_ORDER_CANCEL,
           line: {
-            id: 1,
-            price: 10,
+            data: { id: '1', price: 10 },
+            style: {},
+            tvLine: {},
           },
+          timestamp: 123,
         };
         expect(message).toEqual(expectedMessage);
-        expect(db.del).toHaveBeenCalledTimes(0);
+        expect(mockDb.del).toHaveBeenCalledTimes(0);
         done();
       }
     });
 
-    addOrder(tvUtil, db, onInteraction$, order);
+    addOrder(tvUtil, mockDb, onInteraction$, order);
 
     const onCancel = mockTvChart.onCancel.mock.calls[0][0];
     onCancel();

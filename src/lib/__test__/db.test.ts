@@ -1,17 +1,25 @@
-const db = require('../db');
-const { lineType } = require('../../const');
+import db from '../db';
 
-const tvLine = () => {};
+import {
+  LineType,
+  LineStyle,
+  OrderLineMethods,
+  PositionLineMethods,
+} from '../../types';
 
-const { ORDER_LINE } = lineType;
+type TvLine = OrderLineMethods | PositionLineMethods;
+
+const tvLine = jest.fn() as unknown as TvLine;
+
+const { ORDER_LINE } = LineType;
 
 const orders = [
-  { id: 1, price: 1 },
-  { id: 2, price: 2 },
+  { id: '1', price: 1 },
+  { id: '2', price: 2 },
 ];
 const ordersStyles = [
-  { color1: 1, color2: 1 },
-  { color1: 2, color2: 2 },
+  { color1: '1', color2: '1' } as LineStyle,
+  { color1: '2', color2: '2' } as LineStyle,
 ];
 
 describe('db function', () => {
@@ -55,7 +63,7 @@ describe('db function', () => {
   });
 
   it(`should return false if try to delete order that does not exists`, () => {
-    const result = db.del(10);
+    const result = db.del(10, ORDER_LINE);
     expect(result).toBe(false);
   });
 });

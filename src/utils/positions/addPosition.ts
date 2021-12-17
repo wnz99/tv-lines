@@ -1,17 +1,24 @@
-const u = require('updeep');
-const {
-  defaultPositionProps,
-  interactionType,
-  defaultPositionStyleProps,
-  lineType,
-  tvInteractionType,
-} = require('../../const');
-const makeInteractionMsg = require('../misc/makeInteractionMsg');
+import {
+  InteractionType,
+  TvInteractionType,
+  LineType,
+  TvUtil,
+  OnInteraction,
+  Position,
+} from '../../types';
+import { generalPositionProps, defaultPositionStyleProps } from '../../const';
+import makeInteractionMsg from '../misc/makeInteractionMsg';
+import { Db } from '../../lib/db';
 
-module.exports = (tvUtil, db, onInteraction$, position) => {
+const addPosition = (
+  tvUtil: TvUtil,
+  db: Db,
+  onInteraction$: OnInteraction,
+  position: Position
+) => {
   const { tvChart } = tvUtil;
   const { data, style } = position;
-  const fullPositionData = { ...defaultPositionProps, ...data };
+  const fullPositionData = { ...generalPositionProps, ...data };
   const fullPositionStyle = { ...defaultPositionStyleProps, ...style };
 
   const {
@@ -53,9 +60,9 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
     ON_POSITION_CLOSE,
     ON_POSITION_MODIFY,
     ON_POSITION_REVERSE,
-  } = interactionType;
+  } = InteractionType;
 
-  const { ON_CLOSE, ON_MODIFY, ON_REVERSE } = tvInteractionType;
+  const { ON_CLOSE, ON_MODIFY, ON_REVERSE } = TvInteractionType;
 
   const interactionsMap = {
     [ON_CLOSE]: ON_POSITION_CLOSE,
@@ -63,7 +70,7 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
     [ON_REVERSE]: ON_POSITION_REVERSE,
   };
 
-  const { POSITION_LINE } = lineType;
+  const { POSITION_LINE } = LineType;
 
   try {
     const positionLine = tvChart.createPositionLine();
@@ -79,18 +86,26 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
       .setTooltip(tooltip);
 
     // Callbacks
-    interactions.forEach(interactionMethod => {
-      if (Object.values(tvInteractionType).includes(interactionMethod)) {
-        positionLine[interactionMethod](() => {
-          const message = makeInteractionMsg(
-            interactionsMap[interactionMethod],
-            db.get(id, POSITION_LINE)
-          );
+    if (interactions?.length) {
+      interactions.forEach((interactionMethod) => {
+        if (Object.values(TvInteractionType).includes(interactionMethod)) {
+          positionLine[interactionMethod](() => {
+            const position = db.get(id, POSITION_LINE);
 
-          onInteraction$.next(message);
-        });
-      }
-    });
+            if (!position) {
+              return;
+            }
+
+            const message = makeInteractionMsg(
+              interactionsMap[interactionMethod],
+              position
+            );
+
+            onInteraction$.next(message);
+          });
+        }
+      });
+    }
 
     // Style methods
     positionLine
@@ -114,13 +129,15 @@ module.exports = (tvUtil, db, onInteraction$, position) => {
       .setCloseButtonBackgroundColor(closeButtonBackgroundColor)
       .setCloseButtonIconColor(closeButtonIconColor);
 
-    db.add(u(data, {}), style, positionLine, POSITION_LINE);
+    const position = db.add({ ...data }, style, positionLine, POSITION_LINE);
 
-    onInteraction$.next(
-      makeInteractionMsg(ON_POSITION_ADD, db.get(id, POSITION_LINE))
-    );
+    onInteraction$.next(makeInteractionMsg(ON_POSITION_ADD, position));
     return positionLine;
   } catch (err) {
-    return { error: err.message };
+    if (err instanceof Error) {
+      return { error: err.message };
+    }
   }
 };
+
+export default addPosition;
