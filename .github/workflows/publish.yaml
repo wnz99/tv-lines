@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+           ref: ${{ github.ref }}
 
       - uses: actions/setup-node@v2
         with:
@@ -20,6 +21,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@wnz99'
           cache: 'yarn'
+          ref: ${{ github.ref }}
 
       - name: 'cat package.json'
         run: cat ./package.json
