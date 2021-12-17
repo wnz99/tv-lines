@@ -1,10 +1,11 @@
-global.mocksClear = mocks => mocks.forEach(mock => mock.mockClear());
+global.mocksClear = (mocks) => mocks.forEach((mock) => mock.mockClear());
 
 global.tvChart = function tvChart() {
   const obj = {
     createOrderLine: jest.fn().mockImplementation(() => obj),
     setCancelTooltip: jest.fn().mockImplementation(() => obj),
     setEditable: jest.fn().mockImplementation(() => obj),
+    setCancellable: jest.fn().mockImplementation(() => obj),
     setModifyTooltip: jest.fn().mockImplementation(() => obj),
     setPrice: jest.fn().mockImplementation(() => obj),
     setQuantity: jest.fn().mockImplementation(() => obj),

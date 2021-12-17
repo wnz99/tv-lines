@@ -1,18 +1,38 @@
-/* global tvChart */
-const updateOrder = require('../updateOrder');
-const db = require('../../../lib/db');
-const { lineType } = require('../../../const');
+import { Subject } from 'rxjs';
+
+import updateOrder from '../updateOrder';
+import db, { Db } from '../../../lib/db';
+import {
+  LineType,
+  TvUtil,
+  InteractionMsg,
+  OrderLineMethods,
+} from '../../../types';
 
 jest.mock('../../../lib/db');
 
-const orderId = 1;
+declare global {
+  function tvChart(): OrderLineMethods;
+  function getPrice(): jest.Mocked<number>;
+}
+
+const orderId = '1';
 
 const remove = jest.fn();
-db.get.mockImplementation(() => ({
+
+const add = jest.fn();
+
+const mockDb = db as jest.Mocked<Db>;
+
+const mockTvUtil = global.tvChart() as OrderLineMethods;
+
+mockTvUtil.remove = remove;
+
+mockDb.get.mockImplementation(() => ({
   data: {
     id: orderId,
     price: 10,
-    quantity: 100,
+    quantity: '100',
   },
   style: {
     extendLeft: true,
@@ -20,35 +40,43 @@ db.get.mockImplementation(() => ({
     lineStyle: 5,
     lineWidth: 6,
   },
-  tvLine: {
-    remove,
-  },
+
+  tvLine: mockTvUtil,
 }));
 
-const { ORDER_LINE } = lineType;
+const { ORDER_LINE } = LineType;
 
-let mockTvChart;
-let tvUtil;
+let mockTvChart: any;
+
+let tvUtil: TvUtil;
+
+let onInteraction$: Subject<InteractionMsg>;
 
 describe('updateOrder function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart();
-    db.get.mockClear();
+    onInteraction$ = new Subject<InteractionMsg>();
+    mockTvChart = global.tvChart() as OrderLineMethods;
+    mockDb.get.mockClear();
     remove.mockClear();
+    add.mockClear();
     tvUtil = {
-      order: { add: jest.fn().mockImplementation(() => mockTvChart) },
+      order: { add: add.mockImplementation(() => mockTvChart) },
+      position: {},
       tvChart: mockTvChart,
-    };
+      isBrowser: true,
+      interactions$: onInteraction$,
+    } as unknown as TvUtil;
   });
 
   it(`should return error`, () => {
     remove.mockImplementationOnce(() => {
       throw Error('Test error');
     });
+
     const orderUpdate = {
       data: {
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -56,7 +84,11 @@ describe('updateOrder function', () => {
         lineWidth: 8,
       },
     };
-    const result = updateOrder(tvUtil, db, null, orderId, orderUpdate);
+    const result = updateOrder(tvUtil, db, onInteraction$, {
+      id: orderId,
+      update: orderUpdate,
+    });
+
     expect(result).toEqual({ error: 'Test error' });
   });
 
@@ -64,7 +96,7 @@ describe('updateOrder function', () => {
     const orderUpdate = {
       data: {
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -77,7 +109,7 @@ describe('updateOrder function', () => {
       data: {
         id: orderId,
         price: 40,
-        quantity: 2000,
+        quantity: '2000',
       },
       style: {
         extendLeft: false,
@@ -87,7 +119,10 @@ describe('updateOrder function', () => {
       },
     };
 
-    const result = updateOrder(tvUtil, db, null, orderId, orderUpdate);
+    const result = updateOrder(tvUtil, db, onInteraction$, {
+      id: orderId,
+      update: orderUpdate,
+    });
     expect(db.get).toHaveBeenCalledTimes(1);
     expect(db.get).toHaveBeenCalledWith(orderId, ORDER_LINE);
     expect(remove).toHaveBeenCalledTimes(1);
