@@ -13,5 +13,12 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "package.json"],
-  "exclude": ["dist", "node_modules", ".vscode", ".git", ".idea"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    ".vscode",
+    ".git",
+    ".idea",
+    "src/**/*.test.ts"
+  ]
 }
