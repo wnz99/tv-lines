@@ -1,6 +1,5 @@
 import { Subject } from 'rxjs';
 
-type OrderCb = () => void;
 type PositionCb = () => void;
 
 export interface InteractionMsg {
@@ -11,36 +10,61 @@ export interface InteractionMsg {
 }
 
 export interface OrderLineMethods {
-  setCancelTooltip: (data: string | undefined) => OrderLineMethods;
-  setEditable: (data: boolean | undefined) => OrderLineMethods;
-  setCancellable: (data: boolean | undefined) => OrderLineMethods;
-  setModifyTooltip: (data: string | undefined) => OrderLineMethods;
-  setPrice: (data: number) => OrderLineMethods;
-  setQuantity: (data: string | undefined) => OrderLineMethods;
-  setText: (data: string | undefined) => OrderLineMethods;
-  setTooltip: (data: string | undefined) => OrderLineMethods;
-  onMove: (cb: OrderCb) => OrderLineMethods;
-  onModify: (cb: OrderCb) => OrderLineMethods;
-  onCancel: (cb: OrderCb) => OrderLineMethods;
-  setExtendLeft: (data: boolean | undefined) => OrderLineMethods;
-  setLineLength: (data: number | undefined) => OrderLineMethods;
-  setLineStyle: (data: number | undefined) => OrderLineMethods;
-  setLineWidth: (data: number | undefined) => OrderLineMethods;
-  setBodyFont: (data: string | undefined) => OrderLineMethods;
-  setQuantityFont: (data: string | undefined) => OrderLineMethods;
-  setLineColor: (data: string | undefined) => OrderLineMethods;
-  setBodyBorderColor: (data: string | undefined) => OrderLineMethods;
-  setBodyBackgroundColor: (data: string | undefined) => OrderLineMethods;
-  setBodyTextColor: (data: string | undefined) => OrderLineMethods;
-  setQuantityBorderColor: (data: string | undefined) => OrderLineMethods;
-  setQuantityBackgroundColor: (data: string | undefined) => OrderLineMethods;
-  setQuantityTextColor: (data: string | undefined) => OrderLineMethods;
-  setCancelButtonBorderColor: (data: string | undefined) => OrderLineMethods;
-  setCancelButtonBackgroundColor: (
-    data: string | undefined
-  ) => OrderLineMethods;
-  setCancelButtonIconColor: (data: string | undefined) => OrderLineMethods;
-  remove: () => void;
+  remove(): void;
+  onModify(callback: () => void): this;
+  onModify<T>(data: T, callback: (data: T) => void): this;
+  onMove(callback: () => void): this;
+  onMove<T>(data: T, callback: (data: T) => void): this;
+  onCancel(callback: () => void): this;
+  onCancel<T>(data: T, callback: (data: T) => void): this;
+  getPrice(): number;
+  setPrice(value: number): this;
+  getText(): string;
+  setText(value: string): this;
+  getTooltip(): string;
+  setTooltip(value: string): this;
+  getModifyTooltip(): string;
+  setModifyTooltip(value: string): this;
+  getCancelTooltip(): string;
+  setCancelTooltip(value: string): this;
+  getQuantity(): string;
+  setQuantity(value: string): this;
+  getEditable(): boolean;
+  setEditable(value: boolean): this;
+  getCancellable(): boolean;
+  setCancellable(value: boolean): this;
+  getExtendLeft(): boolean;
+  setExtendLeft(value: boolean): this;
+  getLineLength(): number;
+  setLineLength(value: number): this;
+  getLineStyle(): number;
+  setLineStyle(value: number): this;
+  getLineWidth(): number;
+  setLineWidth(value: number): this;
+  getBodyFont(): string;
+  setBodyFont(value: string): this;
+  getQuantityFont(): string;
+  setQuantityFont(value: string): this;
+  getLineColor(): string;
+  setLineColor(value: string): this;
+  getBodyBorderColor(): string;
+  setBodyBorderColor(value: string): this;
+  getBodyBackgroundColor(): string;
+  setBodyBackgroundColor(value: string): this;
+  getBodyTextColor(): string;
+  setBodyTextColor(value: string): this;
+  getQuantityBorderColor(): string;
+  setQuantityBorderColor(value: string): this;
+  getQuantityBackgroundColor(): string;
+  setQuantityBackgroundColor(value: string): this;
+  getQuantityTextColor(): string;
+  setQuantityTextColor(value: string): this;
+  getCancelButtonBorderColor(): string;
+  setCancelButtonBorderColor(value: string): this;
+  getCancelButtonBackgroundColor(): string;
+  setCancelButtonBackgroundColor(value: string): this;
+  getCancelButtonIconColor(): string;
+  setCancelButtonIconColor(value: string): this;
 }
 
 export interface PositionLineMethods {
@@ -89,7 +113,7 @@ export interface TvChart {
 
 export type OnInteraction = Subject<InteractionMsg>;
 
-export type LineStyle = DefaultOrderStyleProps | PositionLineMethods;
+export type LineStyle = Partial<DefaultOrderStyleProps>;
 
 export interface TvUtil {
   order: {
@@ -138,12 +162,13 @@ export type OrderInteractions = Exclude<
 >[];
 
 export interface GeneralOrderProps {
-  modifyToolTip?: string;
-  cancelToolTip?: string;
-  text?: string;
-  tooltip?: string;
-  editable?: boolean;
-  cancellable?: boolean;
+  modifyToolTip: string;
+  cancelToolTip: string;
+  quantity: string;
+  text: string;
+  tooltip: string;
+  editable: boolean;
+  cancellable: boolean;
   interactions?: Exclude<
     TvInteractionType,
     TvInteractionType.ON_CLOSE | TvInteractionType.ON_REVERSE
@@ -151,27 +176,27 @@ export interface GeneralOrderProps {
 }
 
 export interface DefaultOrderStyleProps {
-  extendLeft?: boolean;
-  lineLength?: number;
-  lineStyle?: number;
-  lineWidth?: number;
-  bodyFont?: string;
-  quantityFont?: string;
-  lineColor?: string;
-  bodyBorderColor?: string;
-  bodyBackgroundColor?: string;
-  bodyTextColor?: string;
-  quantityBorderColor?: string;
-  quantityBackgroundColor?: string;
-  quantityTextColor?: string;
-  cancelButtonBorderColor?: string;
-  cancelButtonBackgroundColor?: string;
-  cancelButtonIconColor?: string;
+  extendLeft: boolean;
+  lineLength: number;
+  lineStyle: number;
+  lineWidth: number;
+  bodyFont: string;
+  quantityFont: string;
+  lineColor: string;
+  bodyBorderColor: string;
+  bodyBackgroundColor: string;
+  bodyTextColor: string;
+  quantityBorderColor: string;
+  quantityBackgroundColor: string;
+  quantityTextColor: string;
+  cancelButtonBorderColor: string;
+  cancelButtonBackgroundColor: string;
+  cancelButtonIconColor: string;
 }
 
 export interface Order {
   data: { id: string; price: number; quantity?: string } & GeneralOrderProps;
-  style: { [key: string]: string | boolean | number };
+  style: Partial<DefaultOrderStyleProps>;
 }
 
 export interface OrderUpdate {

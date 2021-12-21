@@ -9,6 +9,11 @@ export const generalOrderProps: GeneralOrderProps = {
   modifyToolTip: 'Modify Order',
   cancelToolTip: 'Cancel Order',
   interactions: [],
+  text: '',
+  tooltip: '',
+  quantity: '',
+  editable: true,
+  cancellable: true,
 };
 
 export const defaultOrderStyleProps: DefaultOrderStyleProps = {
