@@ -9,6 +9,11 @@ export const generalOrderProps: GeneralOrderProps = {
   modifyToolTip: 'Modify Order',
   cancelToolTip: 'Cancel Order',
   interactions: [],
+  text: '',
+  tooltip: '',
+  quantity: '',
+  editable: true,
+  cancellable: true,
 };
 
 export const defaultOrderStyleProps: DefaultOrderStyleProps = {
@@ -35,6 +40,9 @@ export const generalPositionProps: GeneralPositionProps = {
   reverseTooltip: 'Reverse Position',
   closeTooltip: 'Close Position',
   interactions: [],
+  text: '',
+  tooltip: '',
+  quantity: '',
 };
 
 export const defaultPositionStyleProps: DefaultPositionStyleProps = {
