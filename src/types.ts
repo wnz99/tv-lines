@@ -1,7 +1,5 @@
 import { Subject } from 'rxjs';
 
-type PositionCb = () => void;
-
 export interface InteractionMsg {
   type: InteractionType;
   timestamp: number;
@@ -136,7 +134,9 @@ export interface TvChart {
 
 export type OnInteraction = Subject<InteractionMsg>;
 
-export type LineStyle = Partial<DefaultOrderStyleProps>;
+export type LineStyle =
+  | Partial<DefaultOrderStyleProps>
+  | Partial<DefaultPositionStyleProps>;
 
 export interface TvUtil {
   order: {
