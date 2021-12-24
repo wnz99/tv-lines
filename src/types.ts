@@ -127,7 +127,14 @@ export interface PositionLineMethods {
   setCloseButtonIconColor(value: string): this;
 }
 
+export interface ISubscription<T = () => void> {
+  subscribe(obj: object | null, member: T, singleshot?: boolean): void;
+  unsubscribe(obj: object | null, member: T): void;
+  unsubscribeAll(obj: object | null): void;
+}
+
 export interface TvChart {
+  onDataLoaded(): ISubscription<() => void>;
   createOrderLine: () => OrderLineMethods;
   createPositionLine: () => PositionLineMethods;
 }
