@@ -4,7 +4,7 @@ import updateOrder from '../updateOrder';
 import db, { Db } from '../../../lib/db';
 import {
   LineType,
-  TvUtil,
+  TvLines,
   InteractionMsg,
   OrderLineMethods,
 } from '../../../types';
@@ -48,7 +48,7 @@ const { ORDER_LINE } = LineType;
 
 let mockTvChart: any;
 
-let tvUtil: TvUtil;
+let tvUtil: TvLines;
 
 let onInteraction$: Subject<InteractionMsg>;
 
@@ -65,7 +65,7 @@ describe('updateOrder function', () => {
       tvChart: mockTvChart,
       isBrowser: true,
       interactions$: onInteraction$,
-    } as unknown as TvUtil;
+    } as unknown as TvLines;
   });
 
   it(`should return error`, () => {

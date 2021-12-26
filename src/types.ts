@@ -145,7 +145,7 @@ export type LineStyle =
   | Partial<DefaultOrderStyleProps>
   | Partial<DefaultPositionStyleProps>;
 
-export interface TvUtil {
+export interface TvLines {
   order: {
     add: (order: Order) => OrderLineMethods;
     delete: (id: string) => boolean | undefined;

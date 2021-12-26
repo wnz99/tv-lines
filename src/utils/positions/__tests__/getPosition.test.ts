@@ -4,13 +4,13 @@ import { Subject } from 'rxjs';
 import getPosition from '../getPosition';
 import addPosition from '../addPosition';
 import db from '../../../lib/db';
-import { OrderLineMethods, TvUtil, InteractionMsg } from '../../../types';
+import { OrderLineMethods, TvLines, InteractionMsg } from '../../../types';
 
 jest.mock('../../misc/makeInteractionMsg');
 
 let mockTvChart: any;
 
-let tvUtil: TvUtil;
+let tvUtil: TvLines;
 
 declare global {
   function tvChart(): OrderLineMethods;
@@ -22,7 +22,7 @@ describe('getPosition function', () => {
     mockTvChart = tvChart();
     tvUtil = {
       tvChart: mockTvChart,
-    } as TvUtil;
+    } as TvLines;
   });
 
   it(`should get a position if exists`, () => {

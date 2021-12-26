@@ -3,13 +3,13 @@ import { Subject } from 'rxjs';
 import deleteOrder from '../deleteOrder';
 import addOrder from '../addOrder';
 import db from '../../../lib/db';
-import { TvUtil, InteractionMsg, OrderLineMethods } from './../../../types';
+import { TvLines, InteractionMsg, OrderLineMethods } from './../../../types';
 
 jest.mock('../../misc/makeInteractionMsg');
 
 let mockTvChart: any;
 
-let tvUtil: TvUtil;
+let tvUtil: TvLines;
 
 declare global {
   function tvChart(): OrderLineMethods;
@@ -21,7 +21,7 @@ describe('deleteOrder function', () => {
     mockTvChart = global.tvChart() as unknown as OrderLineMethods;
     tvUtil = {
       tvChart: mockTvChart,
-    } as TvUtil;
+    } as TvLines;
   });
 
   it(`should delete an order`, () => {

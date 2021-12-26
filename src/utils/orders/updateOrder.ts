@@ -1,6 +1,6 @@
 import {
   LineType,
-  TvUtil,
+  TvLines,
   OnInteraction,
   Order,
   OrderUpdate,
@@ -8,7 +8,7 @@ import {
 import { Db } from '../../lib/db';
 
 const updateOrder = (
-  tvUtil: TvUtil,
+  tvUtil: TvLines,
   db: Db,
   _onInteraction$: OnInteraction,
   order: { id: string; update: OrderUpdate }
