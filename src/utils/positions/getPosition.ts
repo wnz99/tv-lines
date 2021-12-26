@@ -1,10 +1,10 @@
-import { TvUtil, OnInteraction, LineType } from '../../types';
+import { TvLines, OnInteraction, LineType } from '../../types';
 import { Db } from '../../lib/db';
 
 const { POSITION_LINE } = LineType;
 
 const getPosition = (
-  _tvUtil: TvUtil,
+  _tvUtil: TvLines,
   db: Db,
   _onInteraction$: OnInteraction,
   id: string

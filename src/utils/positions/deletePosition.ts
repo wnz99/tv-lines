@@ -1,10 +1,10 @@
-import { LineType, TvUtil, OnInteraction } from '../../types';
+import { LineType, TvLines, OnInteraction } from '../../types';
 import { Db } from '../../lib/db';
 
 const { POSITION_LINE } = LineType;
 
 const deletePosition = (
-  _tvUtil: TvUtil,
+  _tvUtil: TvLines,
   db: Db,
   _onInteraction$: OnInteraction,
   id: string

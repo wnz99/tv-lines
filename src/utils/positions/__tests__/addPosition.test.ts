@@ -8,7 +8,7 @@ import {
   InteractionType,
   LineType,
   PositionLineMethods,
-  TvUtil,
+  TvLines,
   Position,
   GeneralPositionProps,
   InteractionMsg,
@@ -104,7 +104,7 @@ const position = { data: positionData, style: positionStyle } as Position &
 
 let mockTvChart: any;
 
-let tvUtil: TvUtil;
+let tvUtil: TvLines;
 
 declare global {
   function tvChart(): PositionLineMethods;
@@ -116,7 +116,7 @@ describe('addPosition function', () => {
     mockTvChart = tvChart() as unknown as PositionLineMethods;
     tvUtil = {
       tvChart: mockTvChart,
-    } as TvUtil;
+    } as TvLines;
     mockDb.get.mockClear();
     mockDb.del.mockClear();
   });

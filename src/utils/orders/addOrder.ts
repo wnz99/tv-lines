@@ -2,7 +2,7 @@ import {
   InteractionType,
   TvInteractionType,
   LineType,
-  TvUtil,
+  TvLines,
   OnInteraction,
   Order,
   TvCtx,
@@ -12,7 +12,7 @@ import makeInteractionMsg from '../misc/makeInteractionMsg';
 import { Db } from '../../lib/db';
 
 const addOrder = (
-  tvUtil: TvUtil,
+  tvUtil: TvLines,
   db: Db,
   onInteraction$: OnInteraction,
   order: Order

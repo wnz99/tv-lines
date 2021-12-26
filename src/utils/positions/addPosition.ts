@@ -2,7 +2,7 @@ import {
   InteractionType,
   TvInteractionType,
   LineType,
-  TvUtil,
+  TvLines,
   OnInteraction,
   Position,
 } from '../../types';
@@ -11,7 +11,7 @@ import makeInteractionMsg from '../misc/makeInteractionMsg';
 import { Db } from '../../lib/db';
 
 const addPosition = (
-  tvUtil: TvUtil,
+  tvUtil: TvLines,
   db: Db,
   onInteraction$: OnInteraction,
   position: Position

@@ -9,7 +9,7 @@ import {
   InteractionType,
   LineType,
   OrderLineMethods,
-  TvUtil,
+  TvLines,
   Order,
   GeneralOrderProps,
   InteractionMsg,
@@ -93,7 +93,7 @@ const order = { data: orderData, style: orderStyle } as Order &
 
 let mockTvChart: any;
 
-let tvUtil: TvUtil;
+let tvUtil: TvLines;
 
 declare global {
   function tvChart(): OrderLineMethods;
@@ -106,7 +106,7 @@ describe('addOrder function', () => {
 
     tvUtil = {
       tvChart: mockTvChart,
-    } as TvUtil;
+    } as TvLines;
     mockDb.get.mockClear();
     mockDb.del.mockClear();
   });

@@ -1,6 +1,6 @@
 import {
   LineType,
-  TvUtil,
+  TvLines,
   OnInteraction,
   Position,
   PositionUpdate,
@@ -8,7 +8,7 @@ import {
 import { Db } from '../../lib/db';
 
 const updatePosition = (
-  tvUtil: TvUtil,
+  tvUtil: TvLines,
   db: Db,
   _onInteraction$: OnInteraction,
   position: { id: string; update: PositionUpdate }
