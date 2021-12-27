@@ -22,6 +22,7 @@ export type TvChart = Pick<
   | 'createPositionLine'
   | 'removeAllShapes'
   | 'createShape'
+  | 'removeEntity'
 >;
 
 export type OnInteraction = Subject<InteractionMsg>;
@@ -37,9 +38,12 @@ export interface TvLines {
     update: (order: { id: string; update: Order }) => IOrderLineAdapter;
   };
   position: {
-    add: (order: Position) => IPositionLineAdapter;
+    add: (position: Position) => IPositionLineAdapter;
     delete: (id: string) => boolean | undefined;
-    update: (order: { id: string; update: Position }) => IPositionLineAdapter;
+    update: (position: {
+      id: string;
+      update: Position;
+    }) => IPositionLineAdapter;
     get: (id: string) => Line | undefined;
   };
   tvChart: TvChart;
