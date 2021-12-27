@@ -798,7 +798,8 @@ export interface CreateShapeOptions<TOverrides extends object>
     | 'vertical_line'
     | 'horizontal_line'
     | 'long_position'
-    | 'short_position';
+    | 'short_position'
+    | 'icon';
   ownerStudyId?: EntityId;
 }
 export interface CreateShapeOptionsBase<TOverrides extends object> {
