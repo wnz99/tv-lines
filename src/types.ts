@@ -6,7 +6,11 @@ import {
   IChartWidgetApi,
 } from './charting_library';
 
-export { IOrderLineAdapter, IPositionLineAdapter } from './charting_library';
+export {
+  IOrderLineAdapter,
+  IPositionLineAdapter,
+  EntityId,
+} from './charting_library';
 
 export interface InteractionMsg {
   type: InteractionType;
