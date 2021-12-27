@@ -6,13 +6,13 @@ import {
   LineType,
   TvLines,
   InteractionMsg,
-  OrderLineMethods,
+  IOrderLineAdapter,
 } from '../../../types';
 
 jest.mock('../../../lib/db');
 
 declare global {
-  function tvChart(): OrderLineMethods;
+  function tvChart(): IOrderLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 
@@ -24,7 +24,7 @@ const add = jest.fn();
 
 const mockDb = db as jest.Mocked<Db>;
 
-const mockTvUtil = global.tvChart() as OrderLineMethods;
+const mockTvUtil = global.tvChart() as IOrderLineAdapter;
 
 mockTvUtil.remove = remove;
 
@@ -55,7 +55,7 @@ let onInteraction$: Subject<InteractionMsg>;
 describe('updateOrder function', () => {
   beforeEach(() => {
     onInteraction$ = new Subject<InteractionMsg>();
-    mockTvChart = global.tvChart() as OrderLineMethods;
+    mockTvChart = global.tvChart() as IOrderLineAdapter;
     mockDb.get.mockClear();
     remove.mockClear();
     add.mockClear();

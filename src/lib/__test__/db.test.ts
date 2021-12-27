@@ -3,11 +3,11 @@ import db from '../db';
 import {
   LineType,
   LineStyle,
-  OrderLineMethods,
-  PositionLineMethods,
+  IOrderLineAdapter,
+  IPositionLineAdapter,
 } from '../../types';
 
-type TvLine = OrderLineMethods | PositionLineMethods;
+type TvLine = IOrderLineAdapter | IPositionLineAdapter;
 
 const tvLine = jest.fn() as unknown as TvLine;
 

@@ -5,7 +5,7 @@ import updatePosition from '../updatePosition';
 import db, { Db } from '../../../lib/db';
 import {
   LineType,
-  OrderLineMethods,
+  IOrderLineAdapter,
   TvLines,
   InteractionMsg,
 } from '../../../types';
@@ -15,7 +15,7 @@ jest.mock('../../../lib/db');
 const positionId = '1';
 
 declare global {
-  function tvChart(): OrderLineMethods;
+  function tvChart(): IOrderLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 
@@ -23,7 +23,7 @@ const remove = jest.fn();
 
 const mockDb = db as jest.Mocked<Db>;
 
-const mockTvUtil = global.tvChart() as OrderLineMethods;
+const mockTvUtil = global.tvChart() as IOrderLineAdapter;
 
 mockTvUtil.remove = remove;
 

@@ -11,6 +11,7 @@
 .rpt2_cache
 .prettierrc
 __tests__/
+src/
 babel.config.js
 coverage
 jest.config.js
