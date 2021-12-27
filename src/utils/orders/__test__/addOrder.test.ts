@@ -8,7 +8,7 @@ import { defaultOrderStyleProps } from '../../../const';
 import {
   InteractionType,
   LineType,
-  OrderLineMethods,
+  IOrderLineAdapter,
   TvLines,
   Order,
   GeneralOrderProps,
@@ -96,13 +96,13 @@ let mockTvChart: any;
 let tvUtil: TvLines;
 
 declare global {
-  function tvChart(): OrderLineMethods;
+  function tvChart(): IOrderLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 
 describe('addOrder function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart() as unknown as OrderLineMethods;
+    mockTvChart = tvChart() as unknown as IOrderLineAdapter;
 
     tvUtil = {
       tvChart: mockTvChart,

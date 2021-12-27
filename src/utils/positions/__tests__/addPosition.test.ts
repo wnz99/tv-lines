@@ -7,7 +7,7 @@ import makeInteractionMsg from '../../misc/makeInteractionMsg';
 import {
   InteractionType,
   LineType,
-  PositionLineMethods,
+  IPositionLineAdapter,
   TvLines,
   Position,
   GeneralPositionProps,
@@ -107,13 +107,13 @@ let mockTvChart: any;
 let tvUtil: TvLines;
 
 declare global {
-  function tvChart(): PositionLineMethods;
+  function tvChart(): IPositionLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 
 describe('addPosition function', () => {
   beforeEach(() => {
-    mockTvChart = tvChart() as unknown as PositionLineMethods;
+    mockTvChart = tvChart() as unknown as IPositionLineAdapter;
     tvUtil = {
       tvChart: mockTvChart,
     } as TvLines;

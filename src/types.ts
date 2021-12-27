@@ -1,5 +1,13 @@
 import { Subject } from 'rxjs';
 
+import {
+  IOrderLineAdapter,
+  IPositionLineAdapter,
+  IChartWidgetApi,
+} from './charting_library';
+
+export { IOrderLineAdapter, IPositionLineAdapter } from './charting_library';
+
 export interface InteractionMsg {
   type: InteractionType;
   timestamp: number;
@@ -7,137 +15,14 @@ export interface InteractionMsg {
   update?: { price: number | undefined };
 }
 
-export interface OrderLineMethods {
-  remove(): void;
-  onModify(callback: () => void): this;
-  onModify<T>(data: T, callback: (data: T) => void): this;
-  onMove(callback: () => void): this;
-  onMove<T>(data: T, callback: (data: T) => void): this;
-  onCancel(callback: () => void): this;
-  onCancel<T>(data: T, callback: (data: T) => void): this;
-  getPrice(): number;
-  setPrice(value: number): this;
-  getText(): string;
-  setText(value: string): this;
-  getTooltip(): string;
-  setTooltip(value: string): this;
-  getModifyTooltip(): string;
-  setModifyTooltip(value: string): this;
-  getCancelTooltip(): string;
-  setCancelTooltip(value: string): this;
-  getQuantity(): string;
-  setQuantity(value: string): this;
-  getEditable(): boolean;
-  setEditable(value: boolean): this;
-  getCancellable(): boolean;
-  setCancellable(value: boolean): this;
-  getExtendLeft(): boolean;
-  setExtendLeft(value: boolean): this;
-  getLineLength(): number;
-  setLineLength(value: number): this;
-  getLineStyle(): number;
-  setLineStyle(value: number): this;
-  getLineWidth(): number;
-  setLineWidth(value: number): this;
-  getBodyFont(): string;
-  setBodyFont(value: string): this;
-  getQuantityFont(): string;
-  setQuantityFont(value: string): this;
-  getLineColor(): string;
-  setLineColor(value: string): this;
-  getBodyBorderColor(): string;
-  setBodyBorderColor(value: string): this;
-  getBodyBackgroundColor(): string;
-  setBodyBackgroundColor(value: string): this;
-  getBodyTextColor(): string;
-  setBodyTextColor(value: string): this;
-  getQuantityBorderColor(): string;
-  setQuantityBorderColor(value: string): this;
-  getQuantityBackgroundColor(): string;
-  setQuantityBackgroundColor(value: string): this;
-  getQuantityTextColor(): string;
-  setQuantityTextColor(value: string): this;
-  getCancelButtonBorderColor(): string;
-  setCancelButtonBorderColor(value: string): this;
-  getCancelButtonBackgroundColor(): string;
-  setCancelButtonBackgroundColor(value: string): this;
-  getCancelButtonIconColor(): string;
-  setCancelButtonIconColor(value: string): this;
-}
-
-export interface PositionLineMethods {
-  remove(): void;
-  onClose(callback: () => void): this;
-  onClose<T>(data: T, callback: (data: T) => void): this;
-  onModify(callback: () => void): this;
-  onModify<T>(data: T, callback: (data: T) => void): this;
-  onReverse(callback: () => void): this;
-  onReverse<T>(data: T, callback: (data: T) => void): this;
-  getPrice(): number;
-  setPrice(value: number): this;
-  getText(): string;
-  setText(value: string): this;
-  getTooltip(): string;
-  setTooltip(value: string): this;
-  getProtectTooltip(): string;
-  setProtectTooltip(value: string): this;
-  getCloseTooltip(): string;
-  setCloseTooltip(value: string): this;
-  getReverseTooltip(): string;
-  setReverseTooltip(value: string): this;
-  getQuantity(): string;
-  setQuantity(value: string): this;
-  getExtendLeft(): boolean;
-  setExtendLeft(value: boolean): this;
-  getLineLength(): number;
-  setLineLength(value: number): this;
-  getLineStyle(): number;
-  setLineStyle(value: number): this;
-  getLineWidth(): number;
-  setLineWidth(value: number): this;
-  getBodyFont(): string;
-  setBodyFont(value: string): this;
-  getQuantityFont(): string;
-  setQuantityFont(value: string): this;
-  getLineColor(): string;
-  setLineColor(value: string): this;
-  getBodyBorderColor(): string;
-  setBodyBorderColor(value: string): this;
-  getBodyBackgroundColor(): string;
-  setBodyBackgroundColor(value: string): this;
-  getBodyTextColor(): string;
-  setBodyTextColor(value: string): this;
-  getQuantityBorderColor(): string;
-  setQuantityBorderColor(value: string): this;
-  getQuantityBackgroundColor(): string;
-  setQuantityBackgroundColor(value: string): this;
-  getQuantityTextColor(): string;
-  setQuantityTextColor(value: string): this;
-  getReverseButtonBorderColor(): string;
-  setReverseButtonBorderColor(value: string): this;
-  getReverseButtonBackgroundColor(): string;
-  setReverseButtonBackgroundColor(value: string): this;
-  getReverseButtonIconColor(): string;
-  setReverseButtonIconColor(value: string): this;
-  getCloseButtonBorderColor(): string;
-  setCloseButtonBorderColor(value: string): this;
-  getCloseButtonBackgroundColor(): string;
-  setCloseButtonBackgroundColor(value: string): this;
-  getCloseButtonIconColor(): string;
-  setCloseButtonIconColor(value: string): this;
-}
-
-export interface ISubscription<T = () => void> {
-  subscribe(obj: object | null, member: T, singleshot?: boolean): void;
-  unsubscribe(obj: object | null, member: T): void;
-  unsubscribeAll(obj: object | null): void;
-}
-
-export interface TvChart {
-  onDataLoaded(): ISubscription<() => void>;
-  createOrderLine: () => OrderLineMethods;
-  createPositionLine: () => PositionLineMethods;
-}
+export type TvChart = Pick<
+  IChartWidgetApi,
+  | 'onDataLoaded'
+  | 'createOrderLine'
+  | 'createPositionLine'
+  | 'removeAllShapes'
+  | 'createShape'
+>;
 
 export type OnInteraction = Subject<InteractionMsg>;
 
@@ -147,14 +32,14 @@ export type LineStyle =
 
 export interface TvLines {
   order: {
-    add: (order: Order) => OrderLineMethods;
+    add: (order: Order) => IOrderLineAdapter;
     delete: (id: string) => boolean | undefined;
-    update: (order: { id: string; update: Order }) => OrderLineMethods;
+    update: (order: { id: string; update: Order }) => IOrderLineAdapter;
   };
   position: {
-    add: (order: Position) => PositionLineMethods;
+    add: (order: Position) => IPositionLineAdapter;
     delete: (id: string) => boolean | undefined;
-    update: (order: { id: string; update: Position }) => PositionLineMethods;
+    update: (order: { id: string; update: Position }) => IPositionLineAdapter;
     get: (id: string) => Line | undefined;
   };
   tvChart: TvChart;
@@ -287,7 +172,7 @@ export interface DefaultPositionStyleProps {
   closeButtonIconColor: string;
 }
 
-export type TvLine = OrderLineMethods | PositionLineMethods;
+export type TvLine = IOrderLineAdapter | IPositionLineAdapter;
 
 export type Line = {
   data: Order['data'] | Position['data'];

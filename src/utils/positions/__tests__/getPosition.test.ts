@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import getPosition from '../getPosition';
 import addPosition from '../addPosition';
 import db from '../../../lib/db';
-import { OrderLineMethods, TvLines, InteractionMsg } from '../../../types';
+import { IOrderLineAdapter, TvLines, InteractionMsg } from '../../../types';
 
 jest.mock('../../misc/makeInteractionMsg');
 
@@ -13,7 +13,7 @@ let mockTvChart: any;
 let tvUtil: TvLines;
 
 declare global {
-  function tvChart(): OrderLineMethods;
+  function tvChart(): IOrderLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 

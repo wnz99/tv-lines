@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import deletePosition from '../deletePosition';
 import addPosition from '../addPosition';
 import db from '../../../lib/db';
-import { TvLines, InteractionMsg, OrderLineMethods } from './../../../types';
+import { TvLines, InteractionMsg, IOrderLineAdapter } from './../../../types';
 
 jest.mock('../../misc/makeInteractionMsg');
 
@@ -12,13 +12,13 @@ let mockTvChart: any;
 let tvUtil: TvLines;
 
 declare global {
-  function tvChart(): OrderLineMethods;
+  function tvChart(): IOrderLineAdapter;
   function getPrice(): jest.Mocked<number>;
 }
 
 describe('deletePosition function', () => {
   beforeEach(() => {
-    mockTvChart = global.tvChart() as unknown as OrderLineMethods;
+    mockTvChart = global.tvChart() as unknown as IOrderLineAdapter;
     tvUtil = {
       tvChart: mockTvChart,
     } as TvLines;

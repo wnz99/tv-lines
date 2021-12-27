@@ -8,8 +8,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "composite": true,
-    "incremental": true
+    "declaration": true
   },
   "include": ["src/**/*", "package.json"],
   "exclude": [
