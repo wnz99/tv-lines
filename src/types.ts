@@ -19,7 +19,18 @@ export interface InteractionMsg {
   update?: { price: number | undefined };
 }
 
-export type TvChart = IChartWidgetApi;
+export type TvChart = Pick<
+  IChartWidgetApi,
+  | 'onDataLoaded'
+  | 'createOrderLine'
+  | 'createPositionLine'
+  | 'removeAllShapes'
+  | 'createShape'
+  | 'removeEntity'
+  | 'getAllShapes'
+  | 'getShapeById'
+  | 'removeAllShapes'
+>;
 
 export type OnInteraction = Subject<InteractionMsg>;
 
