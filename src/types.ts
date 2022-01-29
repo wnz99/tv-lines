@@ -30,6 +30,7 @@ export type TvChart = Pick<
   | 'getAllShapes'
   | 'getShapeById'
   | 'removeAllShapes'
+  | 'getVisibleRange'
 >;
 
 export type OnInteraction = Subject<InteractionMsg>;
